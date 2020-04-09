@@ -1,0 +1,11 @@
+overwrite: true
+schema: "http://seanaye.ca:5001/graphql"
+documents: "gql/**/*.graphql"
+generates:
+  types/types.ts:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-vue-apollo"
+    config:
+      withCompositionFunctions: true

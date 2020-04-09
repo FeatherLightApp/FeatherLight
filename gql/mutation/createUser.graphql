@@ -1,0 +1,17 @@
+mutation createUser ($role: Role) {
+    createUser (role: $role) {
+        __typename
+        ... on User {
+            username
+            password
+            tokens {
+                access
+                refresh
+            }
+        }
+        ... on Error {
+            errorType
+            message
+        }
+    }
+}
