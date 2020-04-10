@@ -7,7 +7,7 @@ generates:
       - "fragment-matcher"
     config:
       apolloClientVersion: 2
-  types/types.ts:
+  types/compositions.ts:
     plugins:
       - "typescript"
       - "typescript-operations"

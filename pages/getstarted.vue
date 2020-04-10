@@ -1,57 +1,82 @@
 <template>
-  <v-container>
-    <v-row justify="center">
-      <v-col>
+  <v-fade-transition mode="out-in">
+    <v-container v-if="!showRecover">
+      <v-row justify="center">
+        <v-col>
+          <v-row justify="center">
+            <v-btn @click="create" :loading="createLoading">New Wallet</v-btn>
+          </v-row>
+        </v-col>
+        <v-col>
+          <v-row justify="center">
+            <v-btn @click="showRecover = true">Recover Wallet</v-btn>
+          </v-row>
+        </v-col>
+        <v-col cols="12" v-if="newRecoveryKey.length > 1">
+          {{ newRecoveryKey }}
+        </v-col>
+      </v-row>
+    </v-container>
+    <v-form
+      v-else
+      v-model="valid"
+      lazy-validation
+      @submit.prevent="recoverAccount"
+    >
+      <v-container>
         <v-row justify="center">
-          <v-btn @click="create" :loading="loading">New Wallet</v-btn>
+          <v-col>
+              <v-text-field
+                v-model="recoveryKey"
+                :rules="rules"
+                required
+              ></v-text-field>
+          </v-col>
+          <v-col>
+            <v-btn type="submit" :disabled="!valid">Recover Wallet</v-btn>
+          </v-col>
         </v-row>
-      </v-col>
-      <v-col>
-        <v-row justify="center">
-          <v-btn>Recover Wallet</v-btn>
-        </v-row>
-      </v-col>
-      <v-col cols="12" v-if="state.username">
-        {{ combined }}
-      </v-col>
-    </v-row>
-  </v-container>
+      </v-container>
+    </v-form>
+  </v-fade-transition>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, computed } from '@vue/composition-api'
-import { useCreateUserMutation, Role } from '~/types/types'
+import { defineComponent, reactive, computed, ref } from '@vue/composition-api'
+import useCreateUser from '~/composition/useCreateUser'
+import useLogin from '~/composition/useLogin'
+import { authStore } from '~/store'
 
+// un unauthed route config in middleware
 export default defineComponent({
   setup () {
-    const { mutate: create, loading, onDone } = useCreateUserMutation({ variables: { role: Role.User }})
-    const state = reactive({
-      username: '',
-      password: '',
-      access: '',
-      refresh: ''
-    })
+    const { create, loading: createLoading } = useCreateUser()
+    const { login: recoverAccount, loading: loginLoading } = useLogin()
+    const newRecoveryKey = computed(() => `${authStore.username}:${authStore.password}`)
 
-    onDone((data) => {
-      console.log({ data })
-      if (data?.data?.createUser?.__typename == 'User') {
-        const user = data.data.createUser
-        state.username = user.username || ''
-        state.password = user.password || ''
-        document.cookie = `refresh=${user.tokens?.refresh}`
-        state.refresh = user.tokens?.refresh
-        state.access = user.tokens?.access
+
+    const rules = [
+      (val: string) => {
+        const rightLen = val.length === 41
+        const split = val.split(':')
+        const valid = rightLen && split.length == 2 && split[0].length == split[1].length
+        return valid || 'Invalid Recovery Key'
       }
-    })
+    ]
 
-    const combined = computed(() => {
-      `Your username is ${state.username}. Your password is ${state.password}.`
+    const state = reactive({
+      valid: false,
+      showRecover: false,
+      recoveryKey: ''
     })
 
     return {
-      combined,
-      loading,
-      state,
-      create
+      create,
+      createLoading,
+      loginLoading,
+      recoverAccount,
+      rules,
+      newRecoveryKey,
+      ...state
     }
   }
 })

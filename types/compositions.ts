@@ -457,6 +457,37 @@ export type CreateUserMutation = (
   ) }
 );
 
+export type LoginMutationVariables = {
+  username: Scalars['String'];
+  password: Scalars['String'];
+};
+
+
+export type LoginMutation = (
+  { __typename?: 'Mutation' }
+  & { login: (
+    { __typename: 'TokenPayload' }
+    & Pick<TokenPayload, 'refresh' | 'access'>
+  ) | (
+    { __typename: 'Error' }
+    & Pick<Error, 'errorType' | 'message'>
+  ) }
+);
+
+export type RefreshMacaroonsMutationVariables = {};
+
+
+export type RefreshMacaroonsMutation = (
+  { __typename?: 'Mutation' }
+  & { refreshMacaroons: (
+    { __typename: 'TokenPayload' }
+    & Pick<TokenPayload, 'refresh' | 'access'>
+  ) | (
+    { __typename: 'Error' }
+    & Pick<Error, 'message' | 'errorType'>
+  ) }
+);
+
 
 export const CreateUserDocument = gql`
     mutation createUser($role: Role) {
@@ -499,3 +530,77 @@ export function useCreateUserMutation(baseOptions?: VueApolloComposable.UseMutat
             return VueApolloComposable.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument, baseOptions);
           }
 export type CreateUserMutationCompositionFunctionResult = ReturnType<typeof useCreateUserMutation>;
+export const LoginDocument = gql`
+    mutation login($username: String!, $password: String!) {
+  login(username: $username, password: $password) {
+    __typename
+    ... on TokenPayload {
+      refresh
+      access
+    }
+    ... on Error {
+      errorType
+      message
+    }
+  }
+}
+    `;
+
+/**
+ * __useLoginMutation__
+ *
+ * To run a mutation, you first call `useLoginMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useLoginMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useLoginMutation({
+ *   variables: {
+ *      username: // value for 'username'
+ *      password: // value for 'password'
+ *   },
+ * });
+ */
+export function useLoginMutation(baseOptions?: VueApolloComposable.UseMutationOptions<LoginMutation, LoginMutationVariables>) {
+            return VueApolloComposable.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument, baseOptions);
+          }
+export type LoginMutationCompositionFunctionResult = ReturnType<typeof useLoginMutation>;
+export const RefreshMacaroonsDocument = gql`
+    mutation refreshMacaroons {
+  refreshMacaroons {
+    __typename
+    ... on TokenPayload {
+      refresh
+      access
+    }
+    ... on Error {
+      message
+      errorType
+    }
+  }
+}
+    `;
+
+/**
+ * __useRefreshMacaroonsMutation__
+ *
+ * To run a mutation, you first call `useRefreshMacaroonsMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useRefreshMacaroonsMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useRefreshMacaroonsMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useRefreshMacaroonsMutation(baseOptions?: VueApolloComposable.UseMutationOptions<RefreshMacaroonsMutation, RefreshMacaroonsMutationVariables>) {
+            return VueApolloComposable.useMutation<RefreshMacaroonsMutation, RefreshMacaroonsMutationVariables>(RefreshMacaroonsDocument, baseOptions);
+          }
+export type RefreshMacaroonsMutationCompositionFunctionResult = ReturnType<typeof useRefreshMacaroonsMutation>;

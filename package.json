@@ -24,7 +24,8 @@
     "apollo-link": "^1.2.14",
     "apollo-link-http": "^1.5.17",
     "graphql": "14.6.0",
-    "nuxt": "^2.0.0"
+    "nuxt": "^2.0.0",
+    "vuex-module-decorators": "^0.16.1"
   },
   "devDependencies": {
     "@babel/runtime-corejs2": "^7.9.2",
