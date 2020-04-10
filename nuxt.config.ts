@@ -30,7 +30,8 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '~/plugins/composition'
+    '~/plugins/composition',
+    '~/plugins/apollo'
   ],
   /*
   ** Nuxt.js dev-modules

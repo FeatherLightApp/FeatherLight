@@ -13,177 +13,18 @@ export type Scalars = {
   B64: any;
 };
 
-export type Query = {
-   __typename?: 'Query';
-  me: UserResponse;
-  nodeBalance: BalanceResponse;
-  channels: ChannelResponse;
-  decodeInvoice: DecodeInvoicePayload;
-  info: InfoPayload;
-  genericRPC?: Maybe<Scalars['String']>;
-};
-
-
-export type QueryDecodeInvoiceArgs = {
-  invoice: Scalars['String'];
-};
-
-
-export type QueryGenericRpcArgs = {
-  command: Scalars['String'];
-  params?: Maybe<Scalars['String']>;
-};
-
-export type UserResponse = User | Error;
-
-export type User = {
-   __typename?: 'User';
-  /** Password is only ever returned once, upon user creation. It is the clients responsiblity to store the password */
-  password?: Maybe<Scalars['String']>;
-  /** Username is only ever returned once, upon user creation. It is the clients responsibility to store the username */
-  username?: Maybe<Scalars['String']>;
-  /** Access token is a jwt which must be supplied in the header for authorized requests */
-  tokens: TokenPayload;
-  balance: Scalars['Int'];
-  btcAddress: Scalars['String'];
-  invoices: Array<Maybe<UserInvoice>>;
-  payments: Array<Maybe<PaidInvoice>>;
-  deposits: Array<Maybe<Deposit>>;
-  role: Role;
-  created: Scalars['Int'];
-};
-
-
-export type UserInvoicesArgs = {
-  paid?: Maybe<Scalars['Boolean']>;
-  limit?: Maybe<Scalars['Int']>;
-};
-
-
-export type UserPaymentsArgs = {
-  start?: Maybe<Scalars['Int']>;
-  end?: Maybe<Scalars['Int']>;
-};
-
-export type TokenPayload = {
-   __typename?: 'TokenPayload';
-  access: Scalars['String'];
-  refresh: Scalars['String'];
-};
-
-export type UserInvoice = Invoice & {
-   __typename?: 'UserInvoice';
-  amount: Scalars['Int'];
-  paid: Scalars['Boolean'];
-  paidAt?: Maybe<Scalars['Int']>;
-  expiry: Scalars['Int'];
-  timestamp: Scalars['Int'];
-  paymentRequest: Scalars['String'];
-  paymentHash: Scalars['B64'];
-  paymentPreimage: Scalars['B64'];
-  memo?: Maybe<Scalars['String']>;
-};
-
-export type Invoice = {
-  amount: Scalars['Int'];
-  expiry: Scalars['Int'];
-  timestamp: Scalars['Int'];
-  paymentRequest: Scalars['String'];
-  paymentHash: Scalars['B64'];
-  paymentPreimage: Scalars['B64'];
-  memo?: Maybe<Scalars['String']>;
-};
-
-
-export type PaidInvoice = Invoice & {
-   __typename?: 'PaidInvoice';
-  amount: Scalars['Int'];
-  fee: Scalars['Int'];
-  value: Scalars['Int'];
-  expiry: Scalars['Int'];
-  timestamp: Scalars['Int'];
-  paymentRequest: Scalars['String'];
-  paymentHash: Scalars['B64'];
-  paymentPreimage: Scalars['B64'];
-  memo?: Maybe<Scalars['String']>;
-};
-
-export type Deposit = {
-   __typename?: 'Deposit';
-  address: Scalars['String'];
-  amount: Scalars['Int'];
-  confirmations: Scalars['Int'];
-  blockhash: Scalars['String'];
-  blockindex: Scalars['Int'];
-  blocktime: Scalars['Int'];
-  txid: Scalars['String'];
-  time: Scalars['Int'];
-  timereceived: Scalars['Int'];
-  comment?: Maybe<Scalars['String']>;
-};
-
-export enum Role {
-  User = 'USER',
-  Admin = 'ADMIN'
+export enum Action {
+  /**
+   * Allows user to attenuate macaroon to only add invoices
+   * this means user can give attenuated macaroon to others to add invoices on their behalf
+   */
+  AddInvoice = 'ADD_INVOICE',
+  /** Used to limit the scope of token to only refreshMacaroon */
+  Refresh = 'REFRESH'
 }
 
-export type Error = {
-   __typename?: 'Error';
-  errorType: ErrorType;
-  message?: Maybe<Scalars['String']>;
-};
-
-export enum ErrorType {
-  AuthenticationError = 'AuthenticationError',
-  PaymentError = 'PaymentError',
-  RateLimited = 'RateLimited',
-  InsufficientFunds = 'InsufficientFunds'
-}
 
 export type BalanceResponse = NodeBalance | Error;
-
-export type NodeBalance = {
-   __typename?: 'NodeBalance';
-  wallet: WalletBalance;
-  channel: ChannelBalance;
-  liquidity?: Maybe<NodeLiquidity>;
-};
-
-export type WalletBalance = {
-   __typename?: 'WalletBalance';
-  totalBalance: Scalars['Int'];
-  confirmedBalance: Scalars['Int'];
-  unconfirmedBalance: Scalars['Int'];
-};
-
-export type ChannelBalance = {
-   __typename?: 'ChannelBalance';
-  balance: Scalars['Int'];
-  pendingOpenBalance: Scalars['Int'];
-};
-
-export type NodeLiquidity = {
-   __typename?: 'NodeLiquidity';
-  inbound: Scalars['Int'];
-  outbound: Scalars['Int'];
-};
-
-export type ChannelResponse = ChannelPayload | Error;
-
-export type ChannelPayload = {
-   __typename?: 'ChannelPayload';
-  open: Array<Maybe<Channel>>;
-  pending: PendingChannelsResponse;
-};
-
-
-export type ChannelPayloadOpenArgs = {
-  active?: Maybe<Scalars['Boolean']>;
-  inactive?: Maybe<Scalars['Boolean']>;
-  public?: Maybe<Scalars['Boolean']>;
-  private?: Maybe<Scalars['Boolean']>;
-  peer?: Maybe<Scalars['B64']>;
-};
 
 export type Channel = {
    __typename?: 'Channel';
@@ -205,58 +46,34 @@ export type Channel = {
   closeAddress: Scalars['String'];
 };
 
-/** [Pending Channels](https://api.lightning.community/?python#pendingchannels) */
-export type PendingChannelsResponse = {
-   __typename?: 'PendingChannelsResponse';
-  totalLimboBalance: Scalars['Int'];
-  pendingOpenChannels: Array<Maybe<PendingOpenChannel>>;
-  pendingClosingChannels: Array<Maybe<ClosedChannel>>;
-  pendingForceClosingChannels: Array<Maybe<ForceClosedChannel>>;
-  waitingCloseChannels?: Maybe<Array<Maybe<WaitingCloseChannel>>>;
+export type ChannelBalance = {
+   __typename?: 'ChannelBalance';
+  balance: Scalars['Int'];
+  pendingOpenBalance: Scalars['Int'];
 };
 
-/** partially implemented [Pending Open Channel](https://api.lightning.community/?python#pendingopenchannel) */
-export type PendingOpenChannel = {
-   __typename?: 'PendingOpenChannel';
-  channel: PendingChannel;
-  confirmationHeight: Scalars['Int'];
-  commitFee: Scalars['Int'];
+export type ChannelPayload = {
+   __typename?: 'ChannelPayload';
+  open: Array<Maybe<Channel>>;
+  pending: PendingChannelsResponse;
 };
 
-export type PendingChannel = {
-   __typename?: 'PendingChannel';
-  remoteNodePub: Scalars['String'];
-  channelPoint: Scalars['String'];
-  capacity: Scalars['Int'];
-  localBalance: Scalars['Int'];
-  remoteBalance: Scalars['Int'];
-  localChanReserveSat: Scalars['Int'];
-  remoteChanReserveSat: Scalars['Int'];
+
+export type ChannelPayloadOpenArgs = {
+  active?: Maybe<Scalars['Boolean']>;
+  inactive?: Maybe<Scalars['Boolean']>;
+  public?: Maybe<Scalars['Boolean']>;
+  private?: Maybe<Scalars['Boolean']>;
+  peer?: Maybe<Scalars['B64']>;
 };
+
+export type ChannelResponse = ChannelPayload | Error;
 
 /** partial implementation of [GRPC closed channel](https://api.lightning.community/?python#closedchannel) */
 export type ClosedChannel = {
    __typename?: 'ClosedChannel';
   channel: PendingChannel;
   closingTxid: Scalars['String'];
-};
-
-/** partial implementation of [Force closed channel](https://api.lightning.community/?python#forceclosedchannel) */
-export type ForceClosedChannel = {
-   __typename?: 'ForceClosedChannel';
-  channel: PendingChannel;
-  closingTxid: Scalars['String'];
-  limboBalance: Scalars['Int'];
-  maturityHeight: Scalars['Int'];
-  blocksTilMaturity: Scalars['Int'];
-  recoveredBalance: Scalars['Int'];
-};
-
-/** partial implementation [Waiting Close Channel](https://api.lightning.community/?python#waitingclosechannel) */
-export type WaitingCloseChannel = {
-   __typename?: 'WaitingCloseChannel';
-  channel: PendingChannel;
-  limboBalance: Scalars['Int'];
 };
 
 export type DecodeInvoicePayload = {
@@ -270,6 +87,68 @@ export type DecodeInvoicePayload = {
   description?: Maybe<Scalars['String']>;
   descriptionHash?: Maybe<Scalars['String']>;
   fallbackAddr?: Maybe<Scalars['String']>;
+};
+
+export type DecodeInvoiceresponse = DecodeInvoicePayload | Error;
+
+export type Deposit = {
+   __typename?: 'Deposit';
+  address: Scalars['String'];
+  amount: Scalars['Int'];
+  confirmations: Scalars['Int'];
+  blockhash: Scalars['String'];
+  blockindex: Scalars['Int'];
+  blocktime: Scalars['Int'];
+  txid: Scalars['String'];
+  time: Scalars['Int'];
+  timereceived: Scalars['Int'];
+  comment?: Maybe<Scalars['String']>;
+};
+
+export type Error = {
+   __typename?: 'Error';
+  errorType: ErrorType;
+  message?: Maybe<Scalars['String']>;
+};
+
+export enum ErrorType {
+  AuthenticationError = 'AuthenticationError',
+  PaymentError = 'PaymentError',
+  RateLimited = 'RateLimited',
+  InsufficientFunds = 'InsufficientFunds'
+}
+
+export type Feature = {
+   __typename?: 'Feature';
+  name?: Maybe<Scalars['String']>;
+  isRequired?: Maybe<Scalars['Boolean']>;
+  isKnown?: Maybe<Scalars['Boolean']>;
+};
+
+export type FeaturesEntry = {
+   __typename?: 'FeaturesEntry';
+  key?: Maybe<Scalars['Int']>;
+  value?: Maybe<Feature>;
+};
+
+/** partial implementation of [Force closed channel](https://api.lightning.community/?python#forceclosedchannel) */
+export type ForceClosedChannel = {
+   __typename?: 'ForceClosedChannel';
+  channel: PendingChannel;
+  closingTxid: Scalars['String'];
+  limboBalance: Scalars['Int'];
+  maturityHeight: Scalars['Int'];
+  blocksTilMaturity: Scalars['Int'];
+  recoveredBalance: Scalars['Int'];
+};
+
+export type HopHint = {
+   __typename?: 'HopHint';
+  nodeID?: Maybe<Scalars['String']>;
+  chanID?: Maybe<Scalars['Int']>;
+  feeBaseMsat?: Maybe<Scalars['Int']>;
+  feePropMilionth?: Maybe<Scalars['Int']>;
+  cltvExpiryDelta?: Maybe<Scalars['Int']>;
 };
 
 export type InfoPayload = {
@@ -289,6 +168,18 @@ export type InfoPayload = {
   syncedToGraph?: Maybe<Scalars['Boolean']>;
   testnet?: Maybe<Scalars['Boolean']>;
 };
+
+export type Invoice = {
+  amount: Scalars['Int'];
+  expiry: Scalars['Int'];
+  timestamp: Scalars['Int'];
+  paymentRequest: Scalars['String'];
+  paymentHash: Scalars['B64'];
+  paymentPreimage: Scalars['B64'];
+  memo?: Maybe<Scalars['String']>;
+};
+
+export type LogoutResponse = UserInvoice | Error;
 
 export type Mutation = {
    __typename?: 'Mutation';
@@ -359,62 +250,36 @@ export type MutationForceUserArgs = {
   user: Scalars['String'];
 };
 
-export type TokenResponse = TokenPayload | Error;
+export type NodeBalance = {
+   __typename?: 'NodeBalance';
+  wallet: WalletBalance;
+  channel: ChannelBalance;
+  liquidity?: Maybe<NodeLiquidity>;
+};
 
-export type LogoutResponse = UserInvoice | Error;
+export type NodeLiquidity = {
+   __typename?: 'NodeLiquidity';
+  inbound: Scalars['Int'];
+  outbound: Scalars['Int'];
+};
 
-/** Either error or an invoice created by this user (payee) */
-export type UserInvoiceResponse = UserInvoice | Error;
-
-/** Possible resolutions to resolve a hold invoice */
-export enum Resolution {
-  Settle = 'SETTLE',
-  Reject = 'REJECT'
-}
-
-/** Either error . or an invoice paid by this user (payee) */
-export type PayInvoiceResponse = PaidInvoice | Error;
-
-export type Subscription = {
-   __typename?: 'Subscription';
-  invoice: PaidInvoiceResponse;
+export type PaidInvoice = Invoice & {
+   __typename?: 'PaidInvoice';
+  amount: Scalars['Int'];
+  fee: Scalars['Int'];
+  value: Scalars['Int'];
+  expiry: Scalars['Int'];
+  timestamp: Scalars['Int'];
+  paymentRequest: Scalars['String'];
+  paymentHash: Scalars['B64'];
+  paymentPreimage: Scalars['B64'];
+  memo?: Maybe<Scalars['String']>;
 };
 
 export type PaidInvoiceResponse = UserInvoice | Error;
 
-export type RouteHint = {
-   __typename?: 'RouteHint';
-  hopHints?: Maybe<Array<Maybe<HopHint>>>;
-};
-
-export type HopHint = {
-   __typename?: 'HopHint';
-  nodeID?: Maybe<Scalars['String']>;
-  chanID?: Maybe<Scalars['Int']>;
-  feeBaseMsat?: Maybe<Scalars['Int']>;
-  feePropMilionth?: Maybe<Scalars['Int']>;
-  cltvExpiryDelta?: Maybe<Scalars['Int']>;
-};
-
-export type FeaturesEntry = {
-   __typename?: 'FeaturesEntry';
-  key?: Maybe<Scalars['Int']>;
-  value?: Maybe<Feature>;
-};
-
-export type Feature = {
-   __typename?: 'Feature';
-  name?: Maybe<Scalars['String']>;
-  isRequired?: Maybe<Scalars['Boolean']>;
-  isKnown?: Maybe<Scalars['Boolean']>;
-};
-
-export type Route = {
-   __typename?: 'Route';
-  totalTimeLock: Scalars['Int'];
-  totalFees: Scalars['Int'];
-  totalAmt: Scalars['Int'];
-};
+/** Either error . or an invoice paid by this user (payee) */
+export type PayInvoiceResponse = PaidInvoice | Error;
 
 export type PeerInfo = {
    __typename?: 'PeerInfo';
@@ -425,17 +290,152 @@ export type PeerInfo = {
   bytesrecv: Scalars['Int'];
 };
 
-export enum Action {
-  /**
-   * Allows user to attenuate macaroon to only add invoices
-   * this means user can give attenuated macaroon to others to add invoices on their behalf
-   */
-  AddInvoice = 'ADD_INVOICE',
-  /** Used to limit the scope of token to only refreshMacaroon */
-  Refresh = 'REFRESH'
+export type PendingChannel = {
+   __typename?: 'PendingChannel';
+  remoteNodePub: Scalars['String'];
+  channelPoint: Scalars['String'];
+  capacity: Scalars['Int'];
+  localBalance: Scalars['Int'];
+  remoteBalance: Scalars['Int'];
+  localChanReserveSat: Scalars['Int'];
+  remoteChanReserveSat: Scalars['Int'];
+};
+
+/** [Pending Channels](https://api.lightning.community/?python#pendingchannels) */
+export type PendingChannelsResponse = {
+   __typename?: 'PendingChannelsResponse';
+  totalLimboBalance: Scalars['Int'];
+  pendingOpenChannels: Array<Maybe<PendingOpenChannel>>;
+  pendingClosingChannels: Array<Maybe<ClosedChannel>>;
+  pendingForceClosingChannels: Array<Maybe<ForceClosedChannel>>;
+  waitingCloseChannels?: Maybe<Array<Maybe<WaitingCloseChannel>>>;
+};
+
+/** partially implemented [Pending Open Channel](https://api.lightning.community/?python#pendingopenchannel) */
+export type PendingOpenChannel = {
+   __typename?: 'PendingOpenChannel';
+  channel: PendingChannel;
+  confirmationHeight: Scalars['Int'];
+  commitFee: Scalars['Int'];
+};
+
+export type Query = {
+   __typename?: 'Query';
+  me: UserResponse;
+  nodeBalance: BalanceResponse;
+  channels: ChannelResponse;
+  decodeInvoice: DecodeInvoicePayload;
+  info: InfoPayload;
+  genericRPC?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryDecodeInvoiceArgs = {
+  invoice: Scalars['String'];
+};
+
+
+export type QueryGenericRpcArgs = {
+  command: Scalars['String'];
+  params?: Maybe<Scalars['String']>;
+};
+
+/** Possible resolutions to resolve a hold invoice */
+export enum Resolution {
+  Settle = 'SETTLE',
+  Reject = 'REJECT'
 }
 
-export type DecodeInvoiceresponse = DecodeInvoicePayload | Error;
+export enum Role {
+  User = 'USER',
+  Admin = 'ADMIN'
+}
+
+export type Route = {
+   __typename?: 'Route';
+  totalTimeLock: Scalars['Int'];
+  totalFees: Scalars['Int'];
+  totalAmt: Scalars['Int'];
+};
+
+export type RouteHint = {
+   __typename?: 'RouteHint';
+  hopHints?: Maybe<Array<Maybe<HopHint>>>;
+};
+
+export type Subscription = {
+   __typename?: 'Subscription';
+  invoice: PaidInvoiceResponse;
+};
+
+export type TokenPayload = {
+   __typename?: 'TokenPayload';
+  access: Scalars['String'];
+  refresh: Scalars['String'];
+};
+
+export type TokenResponse = TokenPayload | Error;
+
+export type User = {
+   __typename?: 'User';
+  /** Password is only ever returned once, upon user creation. It is the clients responsiblity to store the password */
+  password?: Maybe<Scalars['String']>;
+  /** Username is only ever returned once, upon user creation. It is the clients responsibility to store the username */
+  username?: Maybe<Scalars['String']>;
+  /** Access token is a jwt which must be supplied in the header for authorized requests */
+  tokens: TokenPayload;
+  balance: Scalars['Int'];
+  btcAddress: Scalars['String'];
+  invoices: Array<Maybe<UserInvoice>>;
+  payments: Array<Maybe<PaidInvoice>>;
+  deposits: Array<Maybe<Deposit>>;
+  role: Role;
+  created: Scalars['Int'];
+};
+
+
+export type UserInvoicesArgs = {
+  paid?: Maybe<Scalars['Boolean']>;
+  limit?: Maybe<Scalars['Int']>;
+};
+
+
+export type UserPaymentsArgs = {
+  start?: Maybe<Scalars['Int']>;
+  end?: Maybe<Scalars['Int']>;
+};
+
+export type UserInvoice = Invoice & {
+   __typename?: 'UserInvoice';
+  amount: Scalars['Int'];
+  paid: Scalars['Boolean'];
+  paidAt?: Maybe<Scalars['Int']>;
+  expiry: Scalars['Int'];
+  timestamp: Scalars['Int'];
+  paymentRequest: Scalars['String'];
+  paymentHash: Scalars['B64'];
+  paymentPreimage: Scalars['B64'];
+  memo?: Maybe<Scalars['String']>;
+};
+
+/** Either error or an invoice created by this user (payee) */
+export type UserInvoiceResponse = UserInvoice | Error;
+
+export type UserResponse = User | Error;
+
+/** partial implementation [Waiting Close Channel](https://api.lightning.community/?python#waitingclosechannel) */
+export type WaitingCloseChannel = {
+   __typename?: 'WaitingCloseChannel';
+  channel: PendingChannel;
+  limboBalance: Scalars['Int'];
+};
+
+export type WalletBalance = {
+   __typename?: 'WalletBalance';
+  totalBalance: Scalars['Int'];
+  confirmedBalance: Scalars['Int'];
+  unconfirmedBalance: Scalars['Int'];
+};
 
 export type CreateUserMutationVariables = {
   role?: Maybe<Role>;
