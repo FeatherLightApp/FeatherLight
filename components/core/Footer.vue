@@ -1,14 +1,14 @@
 <template lang="pug">
-  v-container
-    v-row(justify="center")
-      v-col(cols="12")
-        | You are logged in
+  v-footer(app padless)
+    v-container(fluid)
+      v-row(justify='end')
+        .pr-4.font-weight-light
+          | LumenWallet
 </template>
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
 
 export default defineComponent({
-  middleware: ['loadAuth', 'assertAuthed'],
   setup () {
 
   }

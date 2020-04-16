@@ -63,6 +63,18 @@
       },
       {
         "kind": "UNION",
+        "name": "NewUserResponse",
+        "possibleTypes": [
+          {
+            "name": "NewUser"
+          },
+          {
+            "name": "Error"
+          }
+        ]
+      },
+      {
+        "kind": "UNION",
         "name": "TokenResponse",
         "possibleTypes": [
           {

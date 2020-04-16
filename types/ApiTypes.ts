@@ -108,7 +108,7 @@ export type Deposit = {
 export type Error = {
    __typename?: 'Error';
   errorType: ErrorType;
-  message?: Maybe<Scalars['String']>;
+  message: Scalars['String'];
 };
 
 export enum ErrorType {
@@ -184,7 +184,7 @@ export type LogoutResponse = UserInvoice | Error;
 export type Mutation = {
    __typename?: 'Mutation';
   /** Creates a new user of type Role, rate limited mutation */
-  createUser: UserResponse;
+  createUser: NewUserResponse;
   /**
    * Logs the user in issuing a full macaroon which does not expire 
    * and a limited refresh macaroon which expires in 7 days
@@ -249,6 +249,37 @@ export type MutationPayInvoiceArgs = {
 export type MutationForceUserArgs = {
   user: Scalars['String'];
 };
+
+export type NewUser = {
+   __typename?: 'NewUser';
+  /** Password is only ever returned once, upon user creation. It is the clients responsiblity to store the password */
+  password: Scalars['String'];
+  /** Username is only ever returned once, upon user creation. It is the clients responsibility to store the username */
+  username: Scalars['String'];
+  /** Access token is a jwt which must be supplied in the header for authorized requests */
+  tokens: TokenPayload;
+  balance: Scalars['Int'];
+  btcAddress: Scalars['String'];
+  invoices: Array<Maybe<UserInvoice>>;
+  payments: Array<Maybe<PaidInvoice>>;
+  deposits: Array<Maybe<Deposit>>;
+  role: Role;
+  created: Scalars['Int'];
+};
+
+
+export type NewUserInvoicesArgs = {
+  paid?: Maybe<Scalars['Boolean']>;
+  limit?: Maybe<Scalars['Int']>;
+};
+
+
+export type NewUserPaymentsArgs = {
+  start?: Maybe<Scalars['Int']>;
+  end?: Maybe<Scalars['Int']>;
+};
+
+export type NewUserResponse = NewUser | Error;
 
 export type NodeBalance = {
    __typename?: 'NodeBalance';
@@ -378,10 +409,6 @@ export type TokenResponse = TokenPayload | Error;
 
 export type User = {
    __typename?: 'User';
-  /** Password is only ever returned once, upon user creation. It is the clients responsiblity to store the password */
-  password?: Maybe<Scalars['String']>;
-  /** Username is only ever returned once, upon user creation. It is the clients responsibility to store the username */
-  username?: Maybe<Scalars['String']>;
   /** Access token is a jwt which must be supplied in the header for authorized requests */
   tokens: TokenPayload;
   balance: Scalars['Int'];
@@ -445,8 +472,8 @@ export type CreateUserMutationVariables = {
 export type CreateUserMutation = (
   { __typename?: 'Mutation' }
   & { createUser: (
-    { __typename: 'User' }
-    & Pick<User, 'username' | 'password'>
+    { __typename: 'NewUser' }
+    & Pick<NewUser, 'username' | 'password'>
     & { tokens: (
       { __typename?: 'TokenPayload' }
       & Pick<TokenPayload, 'access' | 'refresh'>
@@ -493,7 +520,7 @@ export const CreateUserDocument = gql`
     mutation createUser($role: Role) {
   createUser(role: $role) {
     __typename
-    ... on User {
+    ... on NewUser {
       username
       password
       tokens {
