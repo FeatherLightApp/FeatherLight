@@ -1,6 +1,6 @@
 import { reactive, computed, ref } from "@vue/composition-api";
 import { authStore } from '~/store'
-import { useCreateUserMutation, Role} from '~/types/compositions'
+import { useCreateUserMutation, Role} from '~/types/ApiTypes'
 
 
 // Provide the mutations to the auth store

@@ -1,4 +1,4 @@
-import { useRefreshMacaroonsMutation } from '~/types/compositions'
+import { useRefreshMacaroonsMutation } from '~/types/ApiTypes'
 import { authStore } from '~/store'
 
 export default function useGetAccess () {

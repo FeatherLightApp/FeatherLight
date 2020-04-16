@@ -21,7 +21,7 @@
       v-else
       v-model="valid"
       lazy-validation
-      @submit.prevent="recoverAccount"
+      @submit.prevent="recover({username, password})"
     >
       <v-container>
         <v-row justify="center">
@@ -33,7 +33,11 @@
               ></v-text-field>
           </v-col>
           <v-col>
-            <v-btn type="submit" :disabled="!valid">Recover Wallet</v-btn>
+            <v-btn
+              type="submit"
+              :disabled="!valid"
+              :loading="recoverLoading"
+            >Recover Wallet</v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -41,7 +45,7 @@
   </v-fade-transition>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref } from '@vue/composition-api'
 import useCreateUser from '~/composition/useCreateUser'
 import useLogin from '~/composition/useLogin'
 import { authStore } from '~/store'
@@ -50,9 +54,8 @@ import { authStore } from '~/store'
 export default defineComponent({
   setup () {
     const { create, loading: createLoading } = useCreateUser()
-    const { login: recoverAccount, loading: loginLoading } = useLogin()
+    const { login: recover, loading: recoverLoading } = useLogin()
     const newRecoveryKey = computed(() => `${authStore.username}:${authStore.password}`)
-
 
     const rules = [
       (val: string) => {
@@ -63,20 +66,25 @@ export default defineComponent({
       }
     ]
 
-    const state = reactive({
-      valid: false,
-      showRecover: false,
-      recoveryKey: ''
-    })
+    const valid = ref(false)
+    const showRecover = ref(false)
+    const recoveryKey = ref('')
+    const username = computed(() => recoveryKey.value.split(':')[0] || '')
+    const password = computed(() => recoveryKey.value.split(':')[1] || '')
+
 
     return {
       create,
       createLoading,
-      loginLoading,
-      recoverAccount,
+      recover,
+      recoverLoading,
       rules,
       newRecoveryKey,
-      ...state
+      valid,
+      showRecover,
+      recoveryKey,
+      username,
+      password
     }
   }
 })

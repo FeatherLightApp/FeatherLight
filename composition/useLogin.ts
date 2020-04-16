@@ -1,5 +1,5 @@
 import { authStore } from '~/store'
-import { useLoginMutation } from '~/types/compositions'
+import { useLoginMutation } from '~/types/ApiTypes'
 
 export default function useLogin () {
     const { mutate: login, loading, onDone, onError} = useLoginMutation()
