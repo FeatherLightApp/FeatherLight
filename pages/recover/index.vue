@@ -1,9 +1,9 @@
 <template lang="pug">
-  v-form(lazy-validation @submit.prevent="recover(username, password)" v-model="isValid")
+  v-form(lazy-validation @submit.prevent="mutateLogin({username, password})" v-model="isValid")
     v-container
       v-row
         v-col(cols="12")
-          v-text-field(v-model="field" :rules="[validate]" outlined placeholder="Recovery Key")
+          v-text-field(v-model="field" :rules="[validate]" outlined placeholder="Recovery Key" :error-messages="errorMsg")
       v-row
         v-col(cols="12")
           v-row(justify="center")
@@ -33,17 +33,22 @@ export default defineComponent({
     const password = computed(() => field.value.split(':')[1])
 
     function validate (val: string) {
-      return val.length == 41 && username.value.length == 20 && password.value.length || 'Invalid recovery key'
+      return val.length == 41 && username.value.length == 20 && !!password.value.length || 'Invalid recovery key'
     }
 
     const isValid = ref(false)
 
+    const errorMsg = computed(() => authStore.errorMessage)
+
     return {
       field,
+      username,
+      password,
       loading,
       mutateLogin,
       validate,
-      isValid
+      isValid,
+      errorMsg
     }
   }
 })

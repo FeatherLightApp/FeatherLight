@@ -1,7 +1,14 @@
 import colors from 'vuetify/es5/util/colors'
+import { Configuration } from '@nuxt/types'
 
 export default {
   mode: 'spa',
+  env: {
+    endpoint: 'https://dev.seanaye.ca/graphql'
+  },
+  server: {
+    port: 3000
+  },
   /*
   ** Headers of the page
   */
@@ -87,4 +94,4 @@ export default {
   //   extend (config, ctx) {
   //   }
   // }
-}
+} as Configuration

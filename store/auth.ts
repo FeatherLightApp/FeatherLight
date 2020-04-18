@@ -1,13 +1,5 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import { Role, useCreateUserMutation, CreateUserMutation, RefreshMacaroonsMutation, Error, LoginMutation, TokenPayload } from '~/types/ApiTypes'
-import { set } from 'js-cookie'
-
-const writeRefresh = (refresh: string) => {
-    set('refresh', refresh, {
-        expires: 7,
-        domain: 'seanaye.ca'
-    })
-}
 
 @Module({
     name: 'auth',
@@ -22,20 +14,14 @@ export default class AuthModule extends VuexModule {
     errorMessage = ''
 
     @Mutation
-    _ERROR ({ message, errorType }: Error) {
-        this.errorType = errorType
-        this.errorMessage = message
-    }
-
-    @Mutation
     CREATE_USER ({ createUser }: CreateUserMutation) {
         if (createUser.__typename === 'NewUser') {
             this.access = createUser.tokens.access
             this.username = createUser.username
             this.access = createUser.password
-            writeRefresh(createUser.tokens.refresh)
         } else {
-            this.context.commit('_ERROR', createUser)
+            this.errorType = createUser.errorType
+            this.errorMessage = createUser.message
         }
     }
 
@@ -43,9 +29,9 @@ export default class AuthModule extends VuexModule {
     LOGIN ({ login }: LoginMutation) {
         if (login.__typename === 'TokenPayload') {
             this.access = login.access
-            writeRefresh(login.refresh)
         } else {
-            this.context.commit('_ERROR', login)
+            this.errorType = login.errorType
+            this.errorMessage = login.message
         }
     }
 
@@ -53,13 +39,19 @@ export default class AuthModule extends VuexModule {
     REFRESH_MACAROONS ({ refreshMacaroons }: RefreshMacaroonsMutation ) {
         if (refreshMacaroons.__typename === 'TokenPayload') {
             this.access = refreshMacaroons.access
-            writeRefresh(refreshMacaroons.refresh)
         } else {
-            this.context.commit('_ERROR', refreshMacaroons)
+            this.errorType = refreshMacaroons.errorType
+            this.errorMessage = refreshMacaroons.message
         }
     }
 
     get isAuthenticated () {
         return !!this.access
+    }
+
+    @Mutation
+    CLEAR_ERROR () {
+        this.errorMessage = ''
+        this.errorType = ''
     }
 }

@@ -7,7 +7,7 @@ import { createHttpLink } from 'apollo-link-http'
 import introspectionQueryResultData from '~/types/fragments'
 
 const link = createHttpLink({
-    uri: 'http://seanaye.ca:5001/graphql'
+    uri: process.env.endpoint
 })
 
 const fragmentMatcher = new IntrospectionFragmentMatcher({

@@ -1,14 +1,35 @@
 import { authStore } from '~/store'
 import { Middleware, Context } from '@nuxt/types'
-import { useRefreshMacaroonsMutation } from '~/types/ApiTypes'
+import { RefreshMacaroonsMutation } from '~/types/ApiTypes'
+import gql from 'graphql-tag'
 
-const loadAuth: Middleware = async ({ redirect }: Context) => {
+//  TODO determine if composition api can be used in middleware
+// for now resort to axios
+const loadAuth: Middleware = async ({ $axios }: Context) => {
     if (!authStore.isAuthenticated) {
-        console.log('got here')
-        const { mutate } = useRefreshMacaroonsMutation()
-        const res = await mutate({},{})
-        console.log({res})
-        authStore.REFRESH_MACAROONS(res.data)
+        const res = await $axios.post(process.env.endpoint || '', {
+            query: `
+                mutation refreshMacaroons {
+                    refreshMacaroons {
+                        __typename
+                        ... on TokenPayload {
+                            access
+                            refresh
+                        }
+                        ... on Error {
+                            message
+                            errorType
+                        }
+                    }
+                }
+            `
+        }, {
+            withCredentials: true
+        })
+        console.log({ res })
+        if (res.data) {
+            authStore.REFRESH_MACAROONS(res.data.data)
+        }
     }
 }
 
