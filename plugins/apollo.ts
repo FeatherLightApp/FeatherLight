@@ -7,7 +7,8 @@ import { createHttpLink } from 'apollo-link-http'
 import introspectionQueryResultData from '~/types/fragments'
 
 const link = createHttpLink({
-    uri: process.env.endpoint
+    uri: process.env.endpoint,
+    credentials: 'include'
 })
 
 const fragmentMatcher = new IntrospectionFragmentMatcher({

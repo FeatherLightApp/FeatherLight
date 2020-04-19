@@ -4,7 +4,7 @@ import { Configuration } from '@nuxt/types'
 export default {
   mode: 'spa',
   env: {
-    endpoint: 'https://dev.seanaye.ca/graphql'
+    endpoint: 'https://dev.seanaye.ca/graphql/'
   },
   server: {
     port: 3000
