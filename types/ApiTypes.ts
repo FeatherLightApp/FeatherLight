@@ -134,6 +134,7 @@ export type Error = {
 };
 
 export enum ErrorType {
+  NoCredentials = 'NoCredentials',
   AuthenticationError = 'AuthenticationError',
   PaymentError = 'PaymentError',
   RateLimited = 'RateLimited',
@@ -544,7 +545,7 @@ export type LogoutMutationVariables = {};
 export type LogoutMutation = (
   { __typename?: 'Mutation' }
   & { logout?: Maybe<(
-    { __typename?: 'Error' }
+    { __typename: 'Error' }
     & Pick<Error, 'errorType' | 'message'>
   )> }
 );
@@ -705,8 +706,11 @@ export type LoginMutationCompositionFunctionResult = ReturnType<typeof useLoginM
 export const LogoutDocument = gql`
     mutation logout {
   logout {
-    errorType
-    message
+    __typename
+    ... on Error {
+      errorType
+      message
+    }
   }
 }
     `;

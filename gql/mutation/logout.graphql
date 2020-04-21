@@ -1,6 +1,9 @@
 mutation logout {
     logout {
-        errorType
-        message
+        __typename
+        ... on Error {
+            errorType
+            message
+        }
     }
 }

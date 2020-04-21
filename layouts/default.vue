@@ -22,7 +22,7 @@
       v-tooltip(bottom)
         template(v-slot:activator='{ on }')
           v-hover(v-slot:default='{ hover }')
-            v-icon(:color='hover ? "primary": ""' v-on='on').mx-3 mdi-logout
+            v-icon(:color='hover ? "primary": ""' v-on='on' @click='mutate').mx-3 mdi-logout
         | Logout
     v-content
       v-row(justify='start' justify-lg='start' align='center')#align-row
@@ -31,15 +31,17 @@
 </template>
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api'
-import { settingsStore } from '../store'
+import { settingsStore, authStore } from '../store'
 import { Currency } from '~/types/currency'
+import { useLogoutMutation } from '~/types/ApiTypes'
 
 export default defineComponent({
   components: {
     Footer: () => import('~/components/core/Footer.vue'),
     ErrorSnackbar: () => import('~/components/core/ErrorSnackbar.vue')
   },
-  setup () {
+  setup (_, {root}) {
+    const { mutate, onDone } = useLogoutMutation()
     const icon = computed(() => {
       switch(settingsStore.currency) {
         case Currency.sats:
@@ -55,9 +57,17 @@ export default defineComponent({
       }
     })
 
+    onDone((res) => {
+      if (res && res.data) {
+        authStore.LOGOUT(res.data)
+        root.$router.push('/start')
+      }
+    })
+
     return {
       icon,
-      settingsStore
+      settingsStore,
+      mutate
     }
   }
 })
