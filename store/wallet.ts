@@ -9,6 +9,7 @@ import { MeQuery } from '~/types/ApiTypes'
 export default class WalletModule extends VuexModule {
     balance = 0
     created = 0
+    btcAddress = ''
     errorType = ''
     errorMessage = ''
 
@@ -17,6 +18,7 @@ export default class WalletModule extends VuexModule {
         if (me.__typename == 'User') {
             this.balance = me.balance
             this.created = me.created
+            this.btcAddress = me.btcAddress
         } else {
             this.errorType = me.errorType
             this.errorMessage = me.message

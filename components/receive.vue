@@ -1,34 +1,18 @@
 <template lang="pug">
   v-container
-    v-form(
-      v-model='valid'
-      @submit.prevent='mutate(amt * settingsStore.multiplier, memo)'
-    )
-      v-row(justify='center')
-        v-col(cols='12')
-          v-text-field(
-            v-model='amt'
-            outlined
-            filled
-            label='Amount'
-            placeholder='Amount'
-            reverse
-            :rules="[validAmt, required, sufficientAmount]"
-            :prefix="settingsStore.currency"
-            required
-          )
-        v-col(cols='12')
-          v-text-field(
-            v-model='memo'
-            outlined
-            filled
-            counter='1024'
-            label='Memo'
-            :rules='[required, char1024]'
-            required
-          )
-        v-col(cols='12').text-right
-          v-btn(:disabled='!valid || loading' type='submit' :loading='submitting') Create Invoice
+    v-tabs(v-model='method' centered)
+      v-tab
+        | Lightning
+      v-tab
+        | Standard
+    v-fade-transition(mode='out-in' hide-on-leave)
+      div(v-show='method != 0').quaternary--text.overline.text-center
+        | Standard Bitcoin payments are slow and prone to higher fees
+    v-expand-transition(mode='out-in')
+      receive-lightning(v-show='method == 0' key='lightning')
+    v-expand-transition(mode='out-in')
+      receive-onchain(v-show='method != 0' key='btc')
+
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed } from '@vue/composition-api'
@@ -37,36 +21,16 @@ import { settingsStore } from '~/store'
 import { useAddInvoiceMutation } from '~/types/ApiTypes'
 
 export default defineComponent({
+  components: {
+    ReceiveLightning: () => import('~/components/ReceiveLightning.vue'),
+    ReceiveOnchain: () => import('~/components/ReceiveOnchain.vue')
+  },
   setup () {
-    const amt = ref(0)
-    const memo = ref('')
-    const { required, validAmt, valid, sufficientAmount, char1024 } = useValidation()
-    const loading = computed(() => settingsStore.loading)
 
-    const currency = computed({
-      get: () => settingsStore.currency,
-      set: (val) => settingsStore.changeCurrency(val)
-    })
-
-    const { mutate, onDone, loading: submitting } = useAddInvoiceMutation()
-
-    onDone((res) => {
-
-    })
+    const method = ref('Lightning')
 
     return {
-      settingsStore,
-      amt,
-      required,
-      validAmt,
-      sufficientAmount,
-      char1024,
-      valid,
-      mutate,
-      currency,
-      loading,
-      submitting,
-      memo
+      method
     }
   }
 })

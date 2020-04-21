@@ -16,9 +16,8 @@
             v-tab(v-for='item in items' :key='item')
               |{{ item }}
           v-divider(light)
-          v-expand-transition(group mode='out-in')
-            keep-alive
-              receive(v-if='tab === 0' key='receive')
+          v-expand-transition(mode='out-in')
+            receive(v-show='tab === 1 && !loading' key='receive')
 
 
 </template>
@@ -30,13 +29,13 @@ import { settingsStore, walletStore } from '../store'
 export default defineComponent({
   middleware: ['loadAuth', 'assertAuthed'],
   components: {
-    receive: () => import('~/components/receive.vue')
+    Receive: () => import('~/components/Receive.vue')
   },
   setup () {
     const { loading, onResult } = useMeQuery()
 
-    const tab = ref('receive')
-    const items = ref(['receive', 'send', 'transactions'])
+    const tab = ref(1)
+    const items = ref(['send', 'receive', 'transactions'])
     onResult((res) => {
       if (res) {
         walletStore.ME(res.data)

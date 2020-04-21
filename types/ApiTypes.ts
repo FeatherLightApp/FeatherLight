@@ -571,7 +571,7 @@ export type MeQuery = (
   { __typename?: 'Query' }
   & { me: (
     { __typename: 'User' }
-    & Pick<User, 'balance' | 'created'>
+    & Pick<User, 'balance' | 'created' | 'btcAddress'>
   ) | (
     { __typename: 'Error' }
     & Pick<Error, 'message' | 'errorType'>
@@ -778,6 +778,7 @@ export const MeDocument = gql`
     ... on User {
       balance
       created
+      btcAddress
     }
     ... on Error {
       message

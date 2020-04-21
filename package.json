@@ -27,6 +27,7 @@
     "js-cookie": "^2.2.1",
     "nuxt": "^2.0.0",
     "pug": "^2.0.4",
+    "qrcode.vue": "^1.7.0",
     "vuex-module-decorators": "^0.16.1"
   },
   "devDependencies": {

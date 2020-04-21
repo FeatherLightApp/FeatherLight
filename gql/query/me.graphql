@@ -4,6 +4,7 @@ query me {
         ... on User {
             balance
             created
+            btcAddress
         }
         ... on Error {
             message
