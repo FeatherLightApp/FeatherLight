@@ -1,3 +1,6 @@
 mutation logout {
-    logout
+    logout {
+        errorType
+        message
+    }
 }

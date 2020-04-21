@@ -26,6 +26,28 @@ export enum Action {
 
 export type BalanceResponse = NodeBalance | Error;
 
+export type BaseUser = {
+  balance: Scalars['Int'];
+  btcAddress: Scalars['String'];
+  invoices: Array<Maybe<UserInvoice>>;
+  payments: Array<Maybe<PaidInvoice>>;
+  deposits: Array<Maybe<Deposit>>;
+  role: Role;
+  created: Scalars['Int'];
+};
+
+
+export type BaseUserInvoicesArgs = {
+  paid?: Maybe<Scalars['Boolean']>;
+  limit?: Maybe<Scalars['Int']>;
+};
+
+
+export type BaseUserPaymentsArgs = {
+  start?: Maybe<Scalars['Int']>;
+  end?: Maybe<Scalars['Int']>;
+};
+
 export type Channel = {
    __typename?: 'Channel';
   active: Scalars['Boolean'];
@@ -179,8 +201,6 @@ export type Invoice = {
   memo?: Maybe<Scalars['String']>;
 };
 
-export type LogoutResponse = UserInvoice | Error;
-
 export type Mutation = {
    __typename?: 'Mutation';
   /** Creates a new user of type Role, rate limited mutation */
@@ -192,7 +212,7 @@ export type Mutation = {
    */
   login: TokenResponse;
   /** Rotates the macaroon key for the user, causing all issued macaroons to be invalidated */
-  logout: LogoutResponse;
+  logout?: Maybe<Error>;
   /** Issues new token payload: refresh token and full token */
   refreshMacaroons: TokenResponse;
   /**
@@ -251,7 +271,7 @@ export type MutationForceUserArgs = {
   user: Scalars['String'];
 };
 
-export type NewUser = {
+export type NewUser = BaseUser & {
    __typename?: 'NewUser';
   /** Password is only ever returned once, upon user creation. It is the clients responsiblity to store the password */
   password: Scalars['String'];
@@ -408,10 +428,9 @@ export type TokenPayload = {
 
 export type TokenResponse = TokenPayload | Error;
 
-export type User = {
+export type User = BaseUser & {
    __typename?: 'User';
   /** Access token is a jwt which must be supplied in the header for authorized requests */
-  tokens: TokenPayload;
   balance: Scalars['Int'];
   btcAddress: Scalars['String'];
   invoices: Array<Maybe<UserInvoice>>;
@@ -517,6 +536,17 @@ export type LoginMutation = (
     { __typename: 'Error' }
     & Pick<Error, 'errorType' | 'message'>
   ) }
+);
+
+export type LogoutMutationVariables = {};
+
+
+export type LogoutMutation = (
+  { __typename?: 'Mutation' }
+  & { logout?: Maybe<(
+    { __typename?: 'Error' }
+    & Pick<Error, 'errorType' | 'message'>
+  )> }
 );
 
 export type RefreshMacaroonsMutationVariables = {};
@@ -672,6 +702,35 @@ export function useLoginMutation(baseOptions?: VueApolloComposable.UseMutationOp
             return VueApolloComposable.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument, baseOptions);
           }
 export type LoginMutationCompositionFunctionResult = ReturnType<typeof useLoginMutation>;
+export const LogoutDocument = gql`
+    mutation logout {
+  logout {
+    errorType
+    message
+  }
+}
+    `;
+
+/**
+ * __useLogoutMutation__
+ *
+ * To run a mutation, you first call `useLogoutMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useLogoutMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useLogoutMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useLogoutMutation(baseOptions?: VueApolloComposable.UseMutationOptions<LogoutMutation, LogoutMutationVariables>) {
+            return VueApolloComposable.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument, baseOptions);
+          }
+export type LogoutMutationCompositionFunctionResult = ReturnType<typeof useLogoutMutation>;
 export const RefreshMacaroonsDocument = gql`
     mutation refreshMacaroons {
   refreshMacaroons {

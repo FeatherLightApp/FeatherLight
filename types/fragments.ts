@@ -27,6 +27,18 @@
       },
       {
         "kind": "INTERFACE",
+        "name": "BaseUser",
+        "possibleTypes": [
+          {
+            "name": "User"
+          },
+          {
+            "name": "NewUser"
+          }
+        ]
+      },
+      {
+        "kind": "INTERFACE",
         "name": "Invoice",
         "possibleTypes": [
           {
@@ -79,18 +91,6 @@
         "possibleTypes": [
           {
             "name": "TokenPayload"
-          },
-          {
-            "name": "Error"
-          }
-        ]
-      },
-      {
-        "kind": "UNION",
-        "name": "LogoutResponse",
-        "possibleTypes": [
-          {
-            "name": "UserInvoice"
           },
           {
             "name": "Error"
