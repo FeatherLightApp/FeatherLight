@@ -1,26 +1,22 @@
 <template lang="pug">
   v-snackbar(v-model="show" top :timeout="0")
-    | {{ error }}
-    v-btn( @click="clear" text).tertiary--text Dismiss
+    | {{ errorType }}
+    v-btn( @click="clear" text).tertiary--text.text-right Dismiss
     
 </template>
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api'
-import { authStore } from '~/store'
-
+import useErrorHandler from '~/composition/useErrorHandler'
 
 export default defineComponent({
+  name: 'error-snackbar',
   setup () {
-    const show = computed(() => !!authStore.errorType)
-    const error = computed(() => authStore.errorType)
-
-    function clear () {
-      authStore.CLEAR_ERROR()
-    }
+    const { errorMessage, errorType, clear } = useErrorHandler()
+    const show = computed(() => !!errorType.value)
 
     return {
       show,
-      error,
+      errorType,
       clear
     }
   }

@@ -2,11 +2,8 @@
   v-app
     error-snackbar
     v-content
-      v-container#align-container
-        v-row(justify='start' justify-lg='start' align='center' style='height: 100%;')
-          v-container(fluid)
-            v-row(justify='center')
-              nuxt
+      v-row(justify='start' justify-lg='start' align='center')#align-row
+        nuxt
     core-footer
 </template>
 <script lang="ts">
@@ -19,8 +16,8 @@ export default defineComponent({
   }
 })
 </script>
-<style scoped lang="scss">
-#align-container {
-  height: calc(100vh - 60px);
+<style lang="scss" scoped>
+#align-row {
+  height: calc(100% - 20px);
 }
 </style>

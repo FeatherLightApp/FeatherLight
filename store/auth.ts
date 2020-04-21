@@ -18,7 +18,7 @@ export default class AuthModule extends VuexModule {
         if (createUser.__typename === 'NewUser') {
             this.access = createUser.tokens.access
             this.username = createUser.username
-            this.access = createUser.password
+            this.password = createUser.password
         } else {
             this.errorType = createUser.errorType
             this.errorMessage = createUser.message

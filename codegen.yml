@@ -1,5 +1,5 @@
 overwrite: true
-schema: "https://dev.seanaye.ca/graphql"
+schema: "https://dev.seanaye.ca/graphql/"
 documents: "gql/**/*.graphql"
 generates:
   types/fragments.ts:

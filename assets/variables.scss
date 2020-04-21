@@ -4,6 +4,7 @@
 // $font-size-root: 20px;
 
 @import '~vuetify/src/styles/styles.sass';
+@import url('https://fonts.googleapis.com/css2?family=Eczar&display=swap');
 
 // Rally specific variables
 $rally-box-shadow: none;
@@ -15,7 +16,7 @@ $rally-text-color: #FFFFFF;
 // Preset variables
 $body-font-family: 'Roboto Condensed', sans-serif;
 $heading-font-family: 'Eczar', sans-serif;
-$border-radius-root: 0;
+$border-radius-root: 4px;
 $btn-font-size: #{14 / $rally-font-size}rem;
 $btn-font-weight: 700;
 $card-box-shadow: none;

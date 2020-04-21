@@ -4,11 +4,22 @@ import { Context } from '@nuxt/types'
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
 import { createHttpLink } from 'apollo-link-http'
+import { setContext } from 'apollo-link-context'
 import introspectionQueryResultData from '~/types/fragments'
 
 const link = createHttpLink({
     uri: process.env.endpoint,
     credentials: 'include'
+})
+
+const authLink = setContext(async (_, { headers }) => {
+    const { authStore } = await import('~/store')
+    return {
+        headers: {
+            ...headers,
+            Authorization: authStore.access || ''
+        }
+    }
 })
 
 const fragmentMatcher = new IntrospectionFragmentMatcher({
@@ -18,7 +29,7 @@ const fragmentMatcher = new IntrospectionFragmentMatcher({
 const cache = new InMemoryCache({ fragmentMatcher })
 
 const apolloClient = new ApolloClient({
-    link,
+    link: authLink.concat(link),
     cache
 })
 

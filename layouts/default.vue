@@ -1,117 +1,69 @@
-<template>
-  <v-app dark>
-    <v-navigation-drawer
-      v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      fixed
-      app
-    >
-      <v-list>
-        <v-list-item
-          v-for="(item, i) in items"
-          :key="i"
-          :to="item.to"
-          router
-          exact
-        >
-          <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.title" />
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-app-bar
-      :clipped-left="clipped"
-      fixed
-      app
-    >
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn
-        icon
-        @click.stop="miniVariant = !miniVariant"
-      >
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="clipped = !clipped"
-      >
-        <v-icon>mdi-application</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="fixed = !fixed"
-      >
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
-      <v-toolbar-title v-text="title" />
-      <v-spacer />
-      <v-btn
-        icon
-        @click.stop="rightDrawer = !rightDrawer"
-      >
-        <v-icon>mdi-menu</v-icon>
-      </v-btn>
-    </v-app-bar>
-    <v-content>
-      <v-container>
-        <nuxt />
-      </v-container>
-    </v-content>
-    <v-navigation-drawer
-      v-model="rightDrawer"
-      :right="right"
-      temporary
-      fixed
-    >
-      <v-list>
-        <v-list-item @click.native="right = !right">
-          <v-list-item-action>
-            <v-icon light>
-              mdi-repeat
-            </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-footer
-      :fixed="fixed"
-      app
-    >
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
-  </v-app>
+<template lang="pug">
+  v-app
+    error-snackbar
+    v-app-bar(app)
+      v-toolbar-title
+        | Lumen Wallet
+      v-spacer
+      v-menu
+        template(v-slot:activator='{ on:menu }')
+          v-tooltip(bottom)
+            template(v-slot:activator='{ on:tooltip }')
+              v-hover(v-slot:default='{ hover }')
+                v-btn(:color='hover ? "primary" : ""' v-on='{ ...tooltip, ...menu }' text).mx-3 {{ settingsStore.currency }}
+                  v-icon {{icon}}
+            | Change currency
+        v-list
+          v-list-item(
+            v-for='(cur, i) in settingsStore.currencies'
+            :key='i'
+            @click='settingsStore.changeCurrency(cur)'
+          ) {{ cur }}
+      v-tooltip(bottom)
+        template(v-slot:activator='{ on }')
+          v-hover(v-slot:default='{ hover }')
+            v-icon(:color='hover ? "primary": ""' v-on='on').mx-3 mdi-logout
+        | Logout
+    v-content
+      v-row(justify='start' justify-lg='start' align='center')#align-row
+        nuxt
+    footer
 </template>
+<script lang="ts">
+import { defineComponent, computed } from '@vue/composition-api'
+import { settingsStore } from '../store'
 
-<script>
-export default {
-  data () {
+export default defineComponent({
+  components: {
+    Footer: () => import('~/components/core/Footer.vue'),
+    ErrorSnackbar: () => import('~/components/core/ErrorSnackbar.vue')
+  },
+  setup () {
+    const icon = computed(() => {
+      switch(settingsStore.currency) {
+        case 'sats':
+          return 'mdi-currency-btc'
+        case 'jpy':
+          console.log('h')
+          return 'mdi-currency-jpy'
+        case 'eur':
+          return 'mdi-currency-eur'
+        case 'gbp':
+          return 'mdi-currency-gbp'
+        default:
+          return 'mdi-currency-usd'
+      }
+    })
+
     return {
-      clipped: false,
-      drawer: false,
-      fixed: false,
-      items: [
-        {
-          icon: 'mdi-apps',
-          title: 'Welcome',
-          to: '/'
-        },
-        {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire'
-        }
-      ],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Vuetify.js'
+      icon,
+      settingsStore
     }
   }
-}
+})
 </script>
+<style lang="scss" scoped>
+#align-row {
+  height: calc(80%);
+}
+</style>

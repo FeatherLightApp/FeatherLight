@@ -3,7 +3,7 @@
     v-row(justify="space-around")
       v-col(cols="12")
         v-row(justify="center")
-          v-btn(@click="mutateCreate('USER')" :loading="loading" x-large block ripple).my-3 Create New Wallet
+          v-btn(@click="mutateCreate('USER')" :loading="loading" x-large block ripple).my-3 New Wallet
       v-col(cols="12" v-if="errorMsg")
         v-row(justify="center").tertiary--text
           | {{ errorMsg }}
@@ -17,6 +17,7 @@ import { useCreateUserMutation } from '~/types/ApiTypes'
 import { authStore } from '~/store'
 
 export default defineComponent({
+  middleware: ['loadAuth', 'assertUnAuthed'],
   layout: 'plain',
   setup (_, { root }) {
     const { mutate: mutateCreate, loading, onDone } = useCreateUserMutation()
@@ -26,7 +27,7 @@ export default defineComponent({
       if (res && res.data) {
         authStore.CREATE_USER(res.data)
         if (res.data.createUser.__typename === 'NewUser') {
-          root.$router.push('/')
+          root.$router.push('/credentials')
         }
       }
     })

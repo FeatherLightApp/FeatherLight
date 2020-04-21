@@ -188,6 +188,7 @@ export type Mutation = {
   /**
    * Logs the user in issuing a full macaroon which does not expire 
    * and a limited refresh macaroon which expires in 7 days
+   * Limited to 5 operations per day
    */
   login: TokenResponse;
   /** Rotates the macaroon key for the user, causing all issued macaroons to be invalidated */
@@ -464,6 +465,23 @@ export type WalletBalance = {
   unconfirmedBalance: Scalars['Int'];
 };
 
+export type AddInvoiceMutationVariables = {
+  amt: Scalars['Int'];
+  memo: Scalars['String'];
+};
+
+
+export type AddInvoiceMutation = (
+  { __typename?: 'Mutation' }
+  & { addInvoice: (
+    { __typename: 'UserInvoice' }
+    & Pick<UserInvoice, 'amount' | 'paid' | 'paidAt' | 'expiry' | 'timestamp' | 'paymentRequest' | 'paymentHash' | 'paymentPreimage' | 'memo'>
+  ) | (
+    { __typename: 'Error' }
+    & Pick<Error, 'errorType' | 'message'>
+  ) }
+);
+
 export type CreateUserMutationVariables = {
   role?: Maybe<Role>;
 };
@@ -515,7 +533,66 @@ export type RefreshMacaroonsMutation = (
   ) }
 );
 
+export type MeQueryVariables = {};
 
+
+export type MeQuery = (
+  { __typename?: 'Query' }
+  & { me: (
+    { __typename: 'User' }
+    & Pick<User, 'balance' | 'created'>
+  ) | (
+    { __typename: 'Error' }
+    & Pick<Error, 'message' | 'errorType'>
+  ) }
+);
+
+
+export const AddInvoiceDocument = gql`
+    mutation addInvoice($amt: Int!, $memo: String!) {
+  addInvoice(amt: $amt, memo: $memo) {
+    __typename
+    ... on UserInvoice {
+      amount
+      paid
+      paidAt
+      expiry
+      timestamp
+      paymentRequest
+      paymentHash
+      paymentPreimage
+      memo
+    }
+    ... on Error {
+      errorType
+      message
+    }
+  }
+}
+    `;
+
+/**
+ * __useAddInvoiceMutation__
+ *
+ * To run a mutation, you first call `useAddInvoiceMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useAddInvoiceMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useAddInvoiceMutation({
+ *   variables: {
+ *      amt: // value for 'amt'
+ *      memo: // value for 'memo'
+ *   },
+ * });
+ */
+export function useAddInvoiceMutation(baseOptions?: VueApolloComposable.UseMutationOptions<AddInvoiceMutation, AddInvoiceMutationVariables>) {
+            return VueApolloComposable.useMutation<AddInvoiceMutation, AddInvoiceMutationVariables>(AddInvoiceDocument, baseOptions);
+          }
+export type AddInvoiceMutationCompositionFunctionResult = ReturnType<typeof useAddInvoiceMutation>;
 export const CreateUserDocument = gql`
     mutation createUser($role: Role) {
   createUser(role: $role) {
@@ -631,3 +708,39 @@ export function useRefreshMacaroonsMutation(baseOptions?: VueApolloComposable.Us
             return VueApolloComposable.useMutation<RefreshMacaroonsMutation, RefreshMacaroonsMutationVariables>(RefreshMacaroonsDocument, baseOptions);
           }
 export type RefreshMacaroonsMutationCompositionFunctionResult = ReturnType<typeof useRefreshMacaroonsMutation>;
+export const MeDocument = gql`
+    query me {
+  me {
+    __typename
+    ... on User {
+      balance
+      created
+    }
+    ... on Error {
+      message
+      errorType
+    }
+  }
+}
+    `;
+
+/**
+ * __useMeQuery__
+ *
+ * To run a query within a Vue component, call `useMeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMeQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useMeQuery(
+ *   {
+ *   }
+ * );
+ */
+type ReactiveFunctionMeQuery = () => MeQueryVariables
+export function useMeQuery(variables?: MeQueryVariables | VueCompositionApi.Ref<MeQueryVariables> | ReactiveFunctionMeQuery, baseOptions?: VueApolloComposable.UseQueryOptions<MeQuery, MeQueryVariables>) {
+          return VueApolloComposable.useQuery<MeQuery, MeQueryVariables>(MeDocument, variables, baseOptions);
+        }
+export type MeQueryCompositionFunctionResult = ReturnType<typeof useMeQuery>;

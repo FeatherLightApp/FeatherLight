@@ -1,0 +1,13 @@
+query me {
+    me {
+        __typename
+        ... on User {
+            balance
+            created
+        }
+        ... on Error {
+            message
+            errorType
+        }
+    }
+}
