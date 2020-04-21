@@ -18,12 +18,13 @@ import { authStore } from '~/store'
 
 export default defineComponent({
   layout: 'plain',
-  setup () {
+  setup (_, {root}) {
     const { mutate: mutateLogin, loading, onDone } = useLoginMutation()
 
     onDone((res) => {
       if (res && res.data) {
         authStore.LOGIN(res.data)
+        root.$router.push('/')
       }
     })
 

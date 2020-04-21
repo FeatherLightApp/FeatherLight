@@ -24,7 +24,6 @@
             filled
             counter='1024'
             label='Memo'
-            placeholder='Memo'
             :rules='[required, char1024]'
             required
           )
