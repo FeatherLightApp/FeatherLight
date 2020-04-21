@@ -1,7 +1,6 @@
 <template lang="pug">
   v-container
     v-form(
-      lazy-validation
       v-model='valid'
       @submit.prevent='mutate(amt * settingsStore.multiplier, memo)'
     )
@@ -10,23 +9,27 @@
           v-text-field(
             v-model='amt'
             outlined
+            filled
             label='Amount'
             placeholder='Amount'
             reverse
-            :rules="[validAmt, required]"
-            :loading='loading'
+            :rules="[validAmt, required, sufficientAmount]"
+            :prefix="settingsStore.currency"
             required
           )
-            template(v-slot:prepend-inner)
-              v-select(
-                :items='currencies'
-                v-model='currency'
-                style='width: 4.2em;'
-                dense
-                loader-height="0" 
-              ).ml-3
+        v-col(cols='12')
+          v-text-field(
+            v-model='memo'
+            outlined
+            filled
+            counter='1024'
+            label='Memo'
+            placeholder='Memo'
+            :rules='[required, char1024]'
+            required
+          )
         v-col(cols='12').text-right
-          v-btn(:disabled='!valid || loading' type='submit') Create Invoice
+          v-btn(:disabled='!valid || loading' type='submit' :loading='submitting') Create Invoice
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed } from '@vue/composition-api'
@@ -38,8 +41,7 @@ export default defineComponent({
   setup () {
     const amt = ref(0)
     const memo = ref('')
-    const { required, validAmt, valid } = useValidation()
-    const currencies = ref(['sats', 'CAD'])
+    const { required, validAmt, valid, sufficientAmount, char1024 } = useValidation()
     const loading = computed(() => settingsStore.loading)
 
     const currency = computed({
@@ -47,7 +49,7 @@ export default defineComponent({
       set: (val) => settingsStore.changeCurrency(val)
     })
 
-    const { mutate, onDone } = useAddInvoiceMutation()
+    const { mutate, onDone, loading: submitting } = useAddInvoiceMutation()
 
     onDone((res) => {
 
@@ -58,11 +60,14 @@ export default defineComponent({
       amt,
       required,
       validAmt,
+      sufficientAmount,
+      char1024,
       valid,
       mutate,
-      currencies,
       currency,
-      loading
+      loading,
+      submitting,
+      memo
     }
   }
 })

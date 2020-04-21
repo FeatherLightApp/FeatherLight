@@ -32,6 +32,7 @@
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api'
 import { settingsStore } from '../store'
+import { Currency } from '~/types/currency'
 
 export default defineComponent({
   components: {
@@ -41,14 +42,13 @@ export default defineComponent({
   setup () {
     const icon = computed(() => {
       switch(settingsStore.currency) {
-        case 'sats':
+        case Currency.sats:
           return 'mdi-currency-btc'
-        case 'jpy':
-          console.log('h')
+        case Currency.JPY:
           return 'mdi-currency-jpy'
-        case 'eur':
+        case Currency.EUR:
           return 'mdi-currency-eur'
-        case 'gbp':
+        case Currency.GBP:
           return 'mdi-currency-gbp'
         default:
           return 'mdi-currency-usd'
