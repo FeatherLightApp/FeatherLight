@@ -18,6 +18,8 @@
           v-divider(light)
           v-expand-transition(mode='out-in')
             receive(v-show='tab === 1 && !loading' key='receive')
+          v-expand-transition(mode='out-in')
+            transactions(v-if='tab == 2 && !loading' key='tx')
 
 
 </template>
@@ -29,7 +31,8 @@ import { settingsStore, walletStore } from '../store'
 export default defineComponent({
   middleware: ['loadAuth', 'assertAuthed'],
   components: {
-    Receive: () => import('~/components/Receive.vue')
+    Receive: () => import('~/components/Receive.vue'),
+    Transactions: () => import('~/components/Transaction.vue')
   },
   setup () {
     const { loading, onResult } = useMeQuery()

@@ -1,7 +1,7 @@
 <template lang="pug">
   v-form(
     v-model='valid'
-    @submit.prevent='mutate(amt * settingsStore.multiplier, memo)'
+    @submit.prevent='mutate({amt: amt * settingsStore.multiplier, memo})'
   )
     v-row(justify='center')
       v-col(cols='12')
@@ -38,9 +38,10 @@
 import { defineComponent, ref, computed } from '@vue/composition-api'
 import useValidation from '~/composition/useValidation'
 import { useAddInvoiceMutation } from '~/types/ApiTypes'
-import { settingsStore } from '~/store'
+import { settingsStore, walletStore } from '~/store'
 
 export default defineComponent({
+  name: 'receive-lightning',
   setup () {
     const amt = ref('')
     const memo = ref('')
@@ -56,7 +57,9 @@ export default defineComponent({
     const { mutate, onDone, loading: submitting } = useAddInvoiceMutation()
 
     onDone((res) => {
-
+      if (res && res.data) {
+        walletStore.ADD_INVOICE(res.data)
+      }
     })
 
     return {
@@ -67,7 +70,8 @@ export default defineComponent({
       valid,
       char1024,
       settingsStore,
-      submitting
+      submitting,
+      mutate
     }
 
   }

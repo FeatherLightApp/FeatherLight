@@ -193,7 +193,7 @@ export type InfoPayload = {
 };
 
 export type Invoice = {
-  amount: Scalars['Int'];
+  msatAmount: Scalars['Int'];
   expiry: Scalars['Int'];
   timestamp: Scalars['Int'];
   paymentRequest: Scalars['String'];
@@ -318,7 +318,7 @@ export type NodeLiquidity = {
 
 export type PaidInvoice = Invoice & {
    __typename?: 'PaidInvoice';
-  amount: Scalars['Int'];
+  msatAmount: Scalars['Int'];
   fee: Scalars['Int'];
   value: Scalars['Int'];
   expiry: Scalars['Int'];
@@ -455,7 +455,7 @@ export type UserPaymentsArgs = {
 
 export type UserInvoice = Invoice & {
    __typename?: 'UserInvoice';
-  amount: Scalars['Int'];
+  msatAmount: Scalars['Int'];
   paid: Scalars['Boolean'];
   paidAt?: Maybe<Scalars['Int']>;
   expiry: Scalars['Int'];
@@ -495,7 +495,7 @@ export type AddInvoiceMutation = (
   { __typename?: 'Mutation' }
   & { addInvoice: (
     { __typename: 'UserInvoice' }
-    & Pick<UserInvoice, 'amount' | 'paid' | 'paidAt' | 'expiry' | 'timestamp' | 'paymentRequest' | 'paymentHash' | 'paymentPreimage' | 'memo'>
+    & Pick<UserInvoice, 'msatAmount' | 'paid' | 'paidAt' | 'expiry' | 'timestamp' | 'paymentRequest' | 'paymentHash' | 'paymentPreimage' | 'memo'>
   ) | (
     { __typename: 'Error' }
     & Pick<Error, 'errorType' | 'message'>
@@ -564,6 +564,23 @@ export type RefreshMacaroonsMutation = (
   ) }
 );
 
+export type GetTransactionsQueryVariables = {};
+
+
+export type GetTransactionsQuery = (
+  { __typename?: 'Query' }
+  & { me: (
+    { __typename: 'User' }
+    & { invoices: Array<Maybe<(
+      { __typename?: 'UserInvoice' }
+      & Pick<UserInvoice, 'memo' | 'msatAmount' | 'paymentRequest' | 'paid' | 'paidAt' | 'expiry' | 'timestamp' | 'paymentHash' | 'paymentPreimage'>
+    )>> }
+  ) | (
+    { __typename: 'Error' }
+    & Pick<Error, 'message' | 'errorType'>
+  ) }
+);
+
 export type MeQueryVariables = {};
 
 
@@ -584,7 +601,7 @@ export const AddInvoiceDocument = gql`
   addInvoice(amt: $amt, memo: $memo) {
     __typename
     ... on UserInvoice {
-      amount
+      msatAmount
       paid
       paidAt
       expiry
@@ -771,6 +788,52 @@ export function useRefreshMacaroonsMutation(baseOptions?: VueApolloComposable.Us
             return VueApolloComposable.useMutation<RefreshMacaroonsMutation, RefreshMacaroonsMutationVariables>(RefreshMacaroonsDocument, baseOptions);
           }
 export type RefreshMacaroonsMutationCompositionFunctionResult = ReturnType<typeof useRefreshMacaroonsMutation>;
+export const GetTransactionsDocument = gql`
+    query GetTransactions {
+  me {
+    __typename
+    ... on User {
+      invoices(paid: false, limit: 10) {
+        memo
+        msatAmount
+        paymentRequest
+        paid
+        paidAt
+        expiry
+        timestamp
+        paymentRequest
+        paymentHash
+        paymentPreimage
+      }
+    }
+    ... on Error {
+      message
+      errorType
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetTransactionsQuery__
+ *
+ * To run a query within a Vue component, call `useGetTransactionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTransactionsQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useGetTransactionsQuery(
+ *   {
+ *   }
+ * );
+ */
+type ReactiveFunctionGetTransactionsQuery = () => GetTransactionsQueryVariables
+export function useGetTransactionsQuery(variables?: GetTransactionsQueryVariables | VueCompositionApi.Ref<GetTransactionsQueryVariables> | ReactiveFunctionGetTransactionsQuery, baseOptions?: VueApolloComposable.UseQueryOptions<GetTransactionsQuery, GetTransactionsQueryVariables>) {
+          return VueApolloComposable.useQuery<GetTransactionsQuery, GetTransactionsQueryVariables>(GetTransactionsDocument, variables, baseOptions);
+        }
+export type GetTransactionsQueryCompositionFunctionResult = ReturnType<typeof useGetTransactionsQuery>;
 export const MeDocument = gql`
     query me {
   me {

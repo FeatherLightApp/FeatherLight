@@ -2,7 +2,7 @@ mutation addInvoice ($amt: Int! $memo: String!) {
     addInvoice (amt: $amt memo: $memo) {
         __typename
         ... on UserInvoice {
-            amount
+            msatAmount
             paid
             paidAt
             expiry

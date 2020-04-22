@@ -16,6 +16,7 @@ import { walletStore } from '~/store'
 import useClipboard from '~/composition/useClipboard'
 
 export default defineComponent({
+  name: 'receive-onchain',
   components: {
     QrcodeVue: () => import('qrcode.vue')
   },

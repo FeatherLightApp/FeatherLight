@@ -21,13 +21,14 @@ import { settingsStore } from '~/store'
 import { useAddInvoiceMutation } from '~/types/ApiTypes'
 
 export default defineComponent({
+  name: 'receive',
   components: {
     ReceiveLightning: () => import('~/components/ReceiveLightning.vue'),
     ReceiveOnchain: () => import('~/components/ReceiveOnchain.vue')
   },
   setup () {
 
-    const method = ref('Lightning')
+    const method = ref(0)
 
     return {
       method
