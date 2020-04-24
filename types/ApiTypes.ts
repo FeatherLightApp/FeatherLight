@@ -32,6 +32,7 @@ export type BaseUser = {
   invoices: Array<Maybe<UserInvoice>>;
   payments: Array<Maybe<PaidInvoice>>;
   deposits: Array<Maybe<Deposit>>;
+  feed: Array<Maybe<FeedItem>>;
   role: Role;
   created: Scalars['Int'];
 };
@@ -40,12 +41,26 @@ export type BaseUser = {
 export type BaseUserInvoicesArgs = {
   paid?: Maybe<Scalars['Boolean']>;
   limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
 };
 
 
 export type BaseUserPaymentsArgs = {
-  start?: Maybe<Scalars['Int']>;
-  end?: Maybe<Scalars['Int']>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+};
+
+
+export type BaseUserDepositsArgs = {
+  confirmations?: Maybe<Scalars['Int']>;
+};
+
+
+export type BaseUserFeedArgs = {
+  confirmations?: Maybe<Scalars['Int']>;
+  paid?: Maybe<Scalars['Boolean']>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
 };
 
 export type Channel = {
@@ -141,18 +156,7 @@ export enum ErrorType {
   InsufficientFunds = 'InsufficientFunds'
 }
 
-export type Feature = {
-   __typename?: 'Feature';
-  name?: Maybe<Scalars['String']>;
-  isRequired?: Maybe<Scalars['Boolean']>;
-  isKnown?: Maybe<Scalars['Boolean']>;
-};
-
-export type FeaturesEntry = {
-   __typename?: 'FeaturesEntry';
-  key?: Maybe<Scalars['Int']>;
-  value?: Maybe<Feature>;
-};
+export type FeedItem = Deposit | PaidInvoice | UserInvoice;
 
 /** partial implementation of [Force closed channel](https://api.lightning.community/?python#forceclosedchannel) */
 export type ForceClosedChannel = {
@@ -163,15 +167,6 @@ export type ForceClosedChannel = {
   maturityHeight: Scalars['Int'];
   blocksTilMaturity: Scalars['Int'];
   recoveredBalance: Scalars['Int'];
-};
-
-export type HopHint = {
-   __typename?: 'HopHint';
-  nodeID?: Maybe<Scalars['String']>;
-  chanID?: Maybe<Scalars['Int']>;
-  feeBaseMsat?: Maybe<Scalars['Int']>;
-  feePropMilionth?: Maybe<Scalars['Int']>;
-  cltvExpiryDelta?: Maybe<Scalars['Int']>;
 };
 
 export type InfoPayload = {
@@ -193,13 +188,13 @@ export type InfoPayload = {
 };
 
 export type Invoice = {
-  msatAmount: Scalars['Int'];
+  amount: Scalars['Int'];
   expiry: Scalars['Int'];
   timestamp: Scalars['Int'];
   paymentRequest: Scalars['String'];
   paymentHash: Scalars['B64'];
   paymentPreimage: Scalars['B64'];
-  memo?: Maybe<Scalars['String']>;
+  memo: Scalars['String'];
 };
 
 export type Mutation = {
@@ -285,6 +280,7 @@ export type NewUser = BaseUser & {
   invoices: Array<Maybe<UserInvoice>>;
   payments: Array<Maybe<PaidInvoice>>;
   deposits: Array<Maybe<Deposit>>;
+  feed: Array<Maybe<FeedItem>>;
   role: Role;
   created: Scalars['Int'];
 };
@@ -293,12 +289,26 @@ export type NewUser = BaseUser & {
 export type NewUserInvoicesArgs = {
   paid?: Maybe<Scalars['Boolean']>;
   limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
 };
 
 
 export type NewUserPaymentsArgs = {
-  start?: Maybe<Scalars['Int']>;
-  end?: Maybe<Scalars['Int']>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+};
+
+
+export type NewUserDepositsArgs = {
+  confirmations?: Maybe<Scalars['Int']>;
+};
+
+
+export type NewUserFeedArgs = {
+  confirmations?: Maybe<Scalars['Int']>;
+  paid?: Maybe<Scalars['Boolean']>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
 };
 
 export type NewUserResponse = NewUser | Error;
@@ -318,30 +328,21 @@ export type NodeLiquidity = {
 
 export type PaidInvoice = Invoice & {
    __typename?: 'PaidInvoice';
-  msatAmount: Scalars['Int'];
+  amount: Scalars['Int'];
   fee: Scalars['Int'];
-  value: Scalars['Int'];
+  paidAt?: Maybe<Scalars['Int']>;
   expiry: Scalars['Int'];
   timestamp: Scalars['Int'];
   paymentRequest: Scalars['String'];
   paymentHash: Scalars['B64'];
   paymentPreimage: Scalars['B64'];
-  memo?: Maybe<Scalars['String']>;
+  memo: Scalars['String'];
 };
 
 export type PaidInvoiceResponse = UserInvoice | Error;
 
 /** Either error . or an invoice paid by this user (payee) */
 export type PayInvoiceResponse = PaidInvoice | Error;
-
-export type PeerInfo = {
-   __typename?: 'PeerInfo';
-  id: Scalars['Int'];
-  addr: Scalars['String'];
-  conntime: Scalars['Int'];
-  bytessent: Scalars['Int'];
-  bytesrecv: Scalars['Int'];
-};
 
 export type PendingChannel = {
    __typename?: 'PendingChannel';
@@ -404,18 +405,6 @@ export enum Role {
   Admin = 'ADMIN'
 }
 
-export type Route = {
-   __typename?: 'Route';
-  totalTimeLock: Scalars['Int'];
-  totalFees: Scalars['Int'];
-  totalAmt: Scalars['Int'];
-};
-
-export type RouteHint = {
-   __typename?: 'RouteHint';
-  hopHints?: Maybe<Array<Maybe<HopHint>>>;
-};
-
 export type Subscription = {
    __typename?: 'Subscription';
   invoice: PaidInvoiceResponse;
@@ -437,6 +426,7 @@ export type User = BaseUser & {
   invoices: Array<Maybe<UserInvoice>>;
   payments: Array<Maybe<PaidInvoice>>;
   deposits: Array<Maybe<Deposit>>;
+  feed: Array<Maybe<FeedItem>>;
   role: Role;
   created: Scalars['Int'];
 };
@@ -445,17 +435,31 @@ export type User = BaseUser & {
 export type UserInvoicesArgs = {
   paid?: Maybe<Scalars['Boolean']>;
   limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
 };
 
 
 export type UserPaymentsArgs = {
-  start?: Maybe<Scalars['Int']>;
-  end?: Maybe<Scalars['Int']>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+};
+
+
+export type UserDepositsArgs = {
+  confirmations?: Maybe<Scalars['Int']>;
+};
+
+
+export type UserFeedArgs = {
+  confirmations?: Maybe<Scalars['Int']>;
+  paid?: Maybe<Scalars['Boolean']>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
 };
 
 export type UserInvoice = Invoice & {
    __typename?: 'UserInvoice';
-  msatAmount: Scalars['Int'];
+  amount: Scalars['Int'];
   paid: Scalars['Boolean'];
   paidAt?: Maybe<Scalars['Int']>;
   expiry: Scalars['Int'];
@@ -463,7 +467,7 @@ export type UserInvoice = Invoice & {
   paymentRequest: Scalars['String'];
   paymentHash: Scalars['B64'];
   paymentPreimage: Scalars['B64'];
-  memo?: Maybe<Scalars['String']>;
+  memo: Scalars['String'];
 };
 
 /** Either error or an invoice created by this user (payee) */
@@ -495,7 +499,7 @@ export type AddInvoiceMutation = (
   { __typename?: 'Mutation' }
   & { addInvoice: (
     { __typename: 'UserInvoice' }
-    & Pick<UserInvoice, 'msatAmount' | 'paid' | 'paidAt' | 'expiry' | 'timestamp' | 'paymentRequest' | 'paymentHash' | 'paymentPreimage' | 'memo'>
+    & Pick<UserInvoice, 'amount' | 'paid' | 'paidAt' | 'expiry' | 'timestamp' | 'paymentRequest' | 'paymentHash' | 'paymentPreimage' | 'memo'>
   ) | (
     { __typename: 'Error' }
     & Pick<Error, 'errorType' | 'message'>
@@ -564,16 +568,22 @@ export type RefreshMacaroonsMutation = (
   ) }
 );
 
-export type GetTransactionsQueryVariables = {};
+export type FeedQueryVariables = {};
 
 
-export type GetTransactionsQuery = (
+export type FeedQuery = (
   { __typename?: 'Query' }
   & { me: (
     { __typename: 'User' }
-    & { invoices: Array<Maybe<(
-      { __typename?: 'UserInvoice' }
-      & Pick<UserInvoice, 'memo' | 'msatAmount' | 'paymentRequest' | 'paid' | 'paidAt' | 'expiry' | 'timestamp' | 'paymentHash' | 'paymentPreimage'>
+    & { feed: Array<Maybe<(
+      { __typename: 'Deposit' }
+      & Pick<Deposit, 'address' | 'amount' | 'confirmations' | 'blockhash' | 'blockindex' | 'blocktime' | 'txid' | 'time' | 'timereceived' | 'comment'>
+    ) | (
+      { __typename: 'PaidInvoice' }
+      & Pick<PaidInvoice, 'amount' | 'fee' | 'paidAt' | 'expiry' | 'timestamp' | 'paymentRequest' | 'paymentHash' | 'paymentPreimage' | 'memo'>
+    ) | (
+      { __typename: 'UserInvoice' }
+      & Pick<UserInvoice, 'memo' | 'amount' | 'paymentRequest' | 'paid' | 'paidAt' | 'expiry' | 'timestamp' | 'paymentHash' | 'paymentPreimage'>
     )>> }
   ) | (
     { __typename: 'Error' }
@@ -601,7 +611,7 @@ export const AddInvoiceDocument = gql`
   addInvoice(amt: $amt, memo: $memo) {
     __typename
     ... on UserInvoice {
-      msatAmount
+      amount
       paid
       paidAt
       expiry
@@ -788,22 +798,48 @@ export function useRefreshMacaroonsMutation(baseOptions?: VueApolloComposable.Us
             return VueApolloComposable.useMutation<RefreshMacaroonsMutation, RefreshMacaroonsMutationVariables>(RefreshMacaroonsDocument, baseOptions);
           }
 export type RefreshMacaroonsMutationCompositionFunctionResult = ReturnType<typeof useRefreshMacaroonsMutation>;
-export const GetTransactionsDocument = gql`
-    query GetTransactions {
+export const FeedDocument = gql`
+    query Feed {
   me {
     __typename
     ... on User {
-      invoices(paid: false, limit: 10) {
-        memo
-        msatAmount
-        paymentRequest
-        paid
-        paidAt
-        expiry
-        timestamp
-        paymentRequest
-        paymentHash
-        paymentPreimage
+      feed(paid: false, limit: 10, confirmations: 0) {
+        __typename
+        ... on UserInvoice {
+          memo
+          amount
+          paymentRequest
+          paid
+          paidAt
+          expiry
+          timestamp
+          paymentRequest
+          paymentHash
+          paymentPreimage
+        }
+        ... on PaidInvoice {
+          amount
+          fee
+          paidAt
+          expiry
+          timestamp
+          paymentRequest
+          paymentHash
+          paymentPreimage
+          memo
+        }
+        ... on Deposit {
+          address
+          amount
+          confirmations
+          blockhash
+          blockindex
+          blocktime
+          txid
+          time
+          timereceived
+          comment
+        }
       }
     }
     ... on Error {
@@ -815,25 +851,25 @@ export const GetTransactionsDocument = gql`
     `;
 
 /**
- * __useGetTransactionsQuery__
+ * __useFeedQuery__
  *
- * To run a query within a Vue component, call `useGetTransactionsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTransactionsQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * To run a query within a Vue component, call `useFeedQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFeedQuery` returns an object from Apollo Client that contains result, loading and error properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
  *
  * @example
- * const { result, loading, error } = useGetTransactionsQuery(
+ * const { result, loading, error } = useFeedQuery(
  *   {
  *   }
  * );
  */
-type ReactiveFunctionGetTransactionsQuery = () => GetTransactionsQueryVariables
-export function useGetTransactionsQuery(variables?: GetTransactionsQueryVariables | VueCompositionApi.Ref<GetTransactionsQueryVariables> | ReactiveFunctionGetTransactionsQuery, baseOptions?: VueApolloComposable.UseQueryOptions<GetTransactionsQuery, GetTransactionsQueryVariables>) {
-          return VueApolloComposable.useQuery<GetTransactionsQuery, GetTransactionsQueryVariables>(GetTransactionsDocument, variables, baseOptions);
+type ReactiveFunctionFeedQuery = () => FeedQueryVariables
+export function useFeedQuery(variables?: FeedQueryVariables | VueCompositionApi.Ref<FeedQueryVariables> | ReactiveFunctionFeedQuery, baseOptions?: VueApolloComposable.UseQueryOptions<FeedQuery, FeedQueryVariables>) {
+          return VueApolloComposable.useQuery<FeedQuery, FeedQueryVariables>(FeedDocument, variables, baseOptions);
         }
-export type GetTransactionsQueryCompositionFunctionResult = ReturnType<typeof useGetTransactionsQuery>;
+export type FeedQueryCompositionFunctionResult = ReturnType<typeof useFeedQuery>;
 export const MeDocument = gql`
     query me {
   me {

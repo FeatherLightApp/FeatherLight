@@ -51,6 +51,21 @@
       },
       {
         "kind": "UNION",
+        "name": "FeedItem",
+        "possibleTypes": [
+          {
+            "name": "Deposit"
+          },
+          {
+            "name": "PaidInvoice"
+          },
+          {
+            "name": "UserInvoice"
+          }
+        ]
+      },
+      {
+        "kind": "UNION",
         "name": "BalanceResponse",
         "possibleTypes": [
           {

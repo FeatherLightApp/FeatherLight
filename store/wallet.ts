@@ -1,9 +1,13 @@
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
-import { MeQuery, UserInvoice, PaidInvoice, Deposit, AddInvoiceMutation, GetTransactionsQuery } from '~/types/ApiTypes'
+import { MeQuery, UserInvoice, PaidInvoice, Deposit, AddInvoiceMutation, FeedQuery } from '~/types/ApiTypes'
 
 
 function notEmpty<T>(v: T | null | undefined): v is T {
     return v !== null && v !== undefined;
+}
+
+function isDeposit(v: Deposit | UserInvoice | PaidInvoice): v is Deposit {
+    return !!v.__typename && v.__typename == 'Deposit'
 }
 
 @Module({
@@ -17,9 +21,7 @@ export default class WalletModule extends VuexModule {
     btcAddress = ''
     errorType = ''
     errorMessage = ''
-    userInvoice: UserInvoice[] = []
-    paidInvoice: PaidInvoice[] = []
-    deposit: Deposit[] = []
+    feed: Array<UserInvoice | PaidInvoice | Deposit> = []
 
     @Mutation
     ME({ me }: MeQuery) {
@@ -36,7 +38,7 @@ export default class WalletModule extends VuexModule {
     @Mutation
     ADD_INVOICE({ addInvoice }: AddInvoiceMutation) {
         if (addInvoice.__typename == 'UserInvoice') {
-            this.userInvoice = [...this.userInvoice, addInvoice]
+            this.feed = [...this.feed, addInvoice]
         } else {
             this.errorType = addInvoice.errorType
             this.errorMessage = addInvoice.message
@@ -44,10 +46,9 @@ export default class WalletModule extends VuexModule {
     }
 
     @Mutation
-    GET_TX ({ me }: GetTransactionsQuery) {
-        if (me.__typename == 'User' && me.invoices) {
-            const toAdd = me.invoices.filter(notEmpty)
-            this.userInvoice = [...this.userInvoice, ...toAdd]
+    FEED ({ me }: FeedQuery) {
+        if (me.__typename == 'User' && me.feed) {
+            this.feed = me.feed.filter(notEmpty)
         }
     }
 
@@ -55,5 +56,17 @@ export default class WalletModule extends VuexModule {
     CLEAR_ERROR () {
         this.errorMessage = ''
         this.errorType = ''
+    }
+
+    get userInvoices (): UserInvoice[] {
+        return this.feed.filter((i): i is UserInvoice => i.__typename == 'UserInvoice')
+    }
+
+    get paidInvoices (): PaidInvoice[] {
+        return this.feed.filter((i): i is PaidInvoice => i.__typename == 'PaidInvoice')
+    }
+
+    get deposits (): Deposit[] {
+        return this.feed.filter((i): i is Deposit => i.__typename == 'Deposit')
     }
 }
