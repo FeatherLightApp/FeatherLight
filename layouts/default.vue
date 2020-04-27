@@ -10,7 +10,12 @@
           v-tooltip(bottom)
             template(v-slot:activator='{ on:tooltip }')
               v-hover(v-slot:default='{ hover }')
-                v-btn(:color='hover ? "primary" : ""' v-on='{ ...tooltip, ...menu }' text).mx-3 {{ settingsStore.currency }}
+                v-btn(
+                  :color='hover ? "primary" : ""'
+                  :loading='settingsStore.loading'
+                  v-on='{ ...tooltip, ...menu }'
+                  text
+                ).mx-3 {{ settingsStore.currency }}
                   v-icon {{icon}}
             | Change currency
         v-list

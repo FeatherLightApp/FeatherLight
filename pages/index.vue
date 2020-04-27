@@ -9,7 +9,7 @@
               v-col(cols='12').text-right.overline.py-0
                 | Created: {{ walletStore.created }} 
               v-col(cols='12').text-center.primary--text.display-4
-                | {{ walletStore.balance }}
+                | {{ value }}
                 span(v-if='walletStore.created').overline.white--text
                   |&nbsp;{{ settingsStore.currency }}
           v-tabs(v-model='tab' fixed-tabs)
@@ -26,7 +26,8 @@
 <script lang="ts">
 import { defineComponent, computed, ref } from '@vue/composition-api'
 import { useMeQuery } from '~/types/ApiTypes'
-import { settingsStore, walletStore } from '../store'
+import { settingsStore, walletStore } from '~/store'
+import useCurrencyRounding from '~/composition/useCurrencyRounding'
 
 export default defineComponent({
   middleware: ['loadAuth', 'assertAuthed'],
@@ -36,6 +37,7 @@ export default defineComponent({
   },
   setup () {
     const { loading, onResult } = useMeQuery()
+    const { value } = useCurrencyRounding()
 
     const tab = ref(1)
     const items = ref(['send', 'receive', 'transactions'])
@@ -50,7 +52,8 @@ export default defineComponent({
       tab,
       items,
       settingsStore,
-      walletStore
+      walletStore,
+      value
     }
   }
 })

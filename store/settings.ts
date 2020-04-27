@@ -4,7 +4,7 @@ import { Currency } from '~/types/currency'
 
 interface CurrencyPayload {
     currency: Currency,
-    multiplier: number
+    rate: number
 }
 
 @Module({
@@ -16,13 +16,13 @@ export default class SetttingsModule extends VuexModule {
     init = false
     currency = Currency.sats
     currencies = Object.keys(Currency)
-    multiplier = 1
+    rate = 1
     loading = false
 
     @Mutation
-    SET_CURRENCY({ currency, multiplier}: CurrencyPayload) {
+    SET_CURRENCY({ currency, rate}: CurrencyPayload) {
         this.currency = currency
-        this.multiplier = multiplier
+        this.rate = rate
         this.loading = false
     }
 
@@ -42,14 +42,15 @@ export default class SetttingsModule extends VuexModule {
         if (currency == Currency.sats) {
             this.context.commit('SET_CURRENCY', {
                 currency: Currency.sats,
-                multiplier: 1
+                rate: 1
             })
         } else {
             this.context.commit('IS_LOADING')
             const res = await axios.get(`https://blockchain.info/tobtc?currency=${currency}&value=1&cors=true`)
+            console.log({res})
             this.context.commit('SET_CURRENCY', {
                 currency,
-                multiplier: +res.data * 100000000 //change btc to sats
+                rate: +res.data
             })
         }
         window.localStorage.setItem('currency', currency)

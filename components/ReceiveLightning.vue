@@ -1,7 +1,7 @@
 <template lang="pug">
   v-form(
     v-model='valid'
-    @submit.prevent='mutate({amt: amt * settingsStore.multiplier, memo})'
+    @submit.prevent='mutate({amt: translate(amt), memo})'
   )
     v-row(justify='center')
       v-col(cols='12')
@@ -39,6 +39,7 @@ import { defineComponent, ref, computed } from '@vue/composition-api'
 import useValidation from '~/composition/useValidation'
 import { useAddInvoiceMutation } from '~/types/ApiTypes'
 import { settingsStore, walletStore } from '~/store'
+import useCurrencyRounding from '~/composition/useCurrencyRounding'
 
 export default defineComponent({
   name: 'receive-lightning',
@@ -46,6 +47,7 @@ export default defineComponent({
     const amt = ref('')
     const memo = ref('')
     const { required, validAmt, valid, char1024 } = useValidation()
+    const { translate } = useCurrencyRounding()
 
 
 
@@ -71,7 +73,8 @@ export default defineComponent({
       char1024,
       settingsStore,
       submitting,
-      mutate
+      mutate,
+      translate
     }
 
   }
