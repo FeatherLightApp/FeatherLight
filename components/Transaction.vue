@@ -4,7 +4,7 @@
       v-col
         v-expand-transition(mode='out-in')
           v-expansion-panels(v-if='!storeLoading' flat multiple focusable accordion)
-            v-expansion-panel(v-for='item in feed' :key='item.key' hover)
+            v-expansion-panel(v-for='item in feed' :key='item.key' hover @click='resetToggle(0)')
               v-expansion-panel-header
                 v-container(:class='[`${item.color}--text`]').py-0.title.font-weight-light
                   v-row(align='center' no-gutters).mx-3
@@ -27,9 +27,10 @@
                         v-for='(v, k) in formatItem(item)'
                         :key='k'
                         :open-on-hover='false'
+                        :disabled='toggle'
                       )
                         template(v-slot:activator='{ on }')
-                          tr(v-on='on' @click='copy(v)' @mouseout='isCopied=false')
+                          tr(v-on='on' @click='copyTimeout(v)' @mouseout='isCopied=false')
                             td
                               | {{k}}
                             td
@@ -40,7 +41,7 @@
 
 </template>
 <script lang="ts">
-import { defineComponent, computed, watchEffect } from '@vue/composition-api'
+import { defineComponent, computed, watchEffect, ref } from '@vue/composition-api'
 import { walletStore, settingsStore } from '~/store'
 import { useFeedQuery, UserInvoice, PaidInvoice, Deposit } from '~/types/ApiTypes'
 import useCurrencyRounding from '~/composition/useCurrencyRounding'
@@ -48,15 +49,28 @@ import useDateConversion from '~/composition/useDateConversion'
 import useClipboard from '~/composition/useClipboard'
 
 export default defineComponent({
-  setup () {
+  setup (_ , {root}) {
     const { loading, onResult } = useFeedQuery()
     const { translate } = useCurrencyRounding()
     const { epochToHuman } = useDateConversion()
     const { copy, isCopied } = useClipboard()
+    const toggle = ref(false)
 
     watchEffect(() => walletStore.LOADING(loading.value))
 
+    function copyTimeout(v: string) {
+      copy(v)
+      resetToggle(2000)
+    }
 
+    function resetToggle(t: number) {
+      setTimeout(()=>{
+        toggle.value = true
+        root.$nextTick(()=>{
+          toggle.value = false
+        })
+      }, t)
+    }
 
     const feed = computed(() => {
       return walletStore.feed.map(e => {
@@ -116,8 +130,10 @@ export default defineComponent({
       epochToHuman,
       storeLoading,
       formatItem,
-      copy,
-      isCopied
+      copyTimeout,
+      isCopied,
+      toggle,
+      resetToggle
     }
   }
 })
