@@ -14,6 +14,9 @@ export default function useClipboard () {
       document.execCommand('copy')
       document.body.removeChild(el)
       isCopied.value = true
+      setTimeout(() => {
+        isCopied.value = false
+      }, 2000)
     }
 
     return {

@@ -2,35 +2,61 @@
   v-container
     v-row
       v-col
-        v-list
-          v-list-item(v-for='item in feed' :key='item.key' hover)
-            v-list-item-icon
-              v-icon(v-text='(item.__typename == "PaidInvoice") ? "mdi-cash-minus" : "mdi-cash-plus"' :color='item.color')
-            v-list-item-content
-              v-list-item-title(:class='[`${item.color}--text`]').title.font-weight-light
-                v-container
-                  v-row(justify='space-between')
-                    div
-                      | {{translate(item.amount)}} 
-                      span.white--text.overline
-                        | {{settingsStore.currency}}
-                    div.caption
+        v-expand-transition(mode='out-in')
+          v-expansion-panels(v-if='!storeLoading' flat multiple focusable accordion)
+            v-expansion-panel(v-for='item in feed' :key='item.key' hover)
+              v-expansion-panel-header
+                v-container(:class='[`${item.color}--text`]').py-0.title.font-weight-light
+                  v-row(align='center' no-gutters).mx-3
+                    v-col
+                      v-row
+                        v-icon(v-text='(item.__typename == "PaidInvoice") ? "mdi-cash-minus" : "mdi-cash-plus"' :color='item.color')
+                        div.pl-3
+                          | {{translate(item.amount)}} 
+                          span.white--text.overline
+                            | {{settingsStore.currency}}
+                    v-spacer
+                    div.overline
                       |{{item.typeDesc}}
-              v-list-item-subtitle
-                | {{item.comment || item.memo}}
+              v-expansion-panel-content
+                v-simple-table
+                  template(v-slot:default)
+                    tbody
+                      v-tooltip(
+                        top
+                        v-for='(v, k) in formatItem(item)'
+                        :key='k'
+                        :open-on-hover='false'
+                      )
+                        template(v-slot:activator='{ on }')
+                          tr(v-on='on' @click='copy(v)' @mouseout='isCopied=false')
+                            td
+                              | {{k}}
+                            td
+                              | {{v}}
+                        span
+                          | {{ 'Copied!' }}
+                      
+
 </template>
 <script lang="ts">
-import { defineComponent, computed } from '@vue/composition-api'
+import { defineComponent, computed, watchEffect } from '@vue/composition-api'
 import { walletStore, settingsStore } from '~/store'
 import { useFeedQuery, UserInvoice, PaidInvoice, Deposit } from '~/types/ApiTypes'
 import useCurrencyRounding from '~/composition/useCurrencyRounding'
 import useDateConversion from '~/composition/useDateConversion'
+import useClipboard from '~/composition/useClipboard'
 
 export default defineComponent({
   setup () {
     const { loading, onResult } = useFeedQuery()
     const { translate } = useCurrencyRounding()
     const { epochToHuman } = useDateConversion()
+    const { copy, isCopied } = useClipboard()
+
+    watchEffect(() => walletStore.LOADING(loading.value))
+
+
 
     const feed = computed(() => {
       return walletStore.feed.map(e => {
@@ -56,6 +82,27 @@ export default defineComponent({
       })
     })
 
+    function formatItem(i: Deposit | UserInvoice | PaidInvoice) {
+      if (i.__typename == 'Deposit') {
+        const table = {
+          Address: i.address,
+          Amount: `${translate(i.amount)} ${settingsStore.currency}`,
+          Confirmations: i.confirmations,
+          'Block Hash': i.blockhash,
+          'Block Time': epochToHuman(i.blocktime),
+          TxID: i.txid,
+          Time: epochToHuman(i.time),
+          Received: epochToHuman(i.timereceived)
+        }
+        if (!!i.comment) {
+          return { Comment: i.comment, ...table}
+        }
+        return table
+      }
+    }
+
+    const storeLoading = computed(() => walletStore.loading)
+
     onResult((res) => {
       if (res && res.data) {
         walletStore.FEED(res.data)
@@ -66,7 +113,11 @@ export default defineComponent({
       feed,
       settingsStore,
       translate,
-      epochToHuman
+      epochToHuman,
+      storeLoading,
+      formatItem,
+      copy,
+      isCopied
     }
   }
 })

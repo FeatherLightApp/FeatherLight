@@ -3,7 +3,7 @@
     v-row(justify="center")
       v-col(cols="12" md='10' lg='8')
         v-card
-          v-progress-linear(v-if='loading' stream buffer-value='0' color="quaternary" absolute top)
+          v-progress-linear(v-if='loading || walletStore.loading' stream buffer-value='0' color="quaternary" absolute top)
           v-container
             v-row(justify='center')
               v-col(cols='12').text-right.overline.py-0
@@ -17,9 +17,9 @@
               |{{ item }}
           v-divider(light)
           v-expand-transition(mode='out-in')
-            receive(v-show='tab === 1 && !loading' key='receive')
+            transactions(v-show='tab === 1 && !loading' key='tx')
           v-expand-transition(mode='out-in')
-            transactions(v-if='tab == 2 && !loading' key='tx')
+            receive(v-if='tab == 2 && !loading' key='receive')
 
 
 </template>
@@ -40,7 +40,7 @@ export default defineComponent({
     const { value } = useCurrencyRounding()
 
     const tab = ref(1)
-    const items = ref(['send', 'receive', 'transactions'])
+    const items = ref(['send', 'transactions', 'receive'])
     onResult((res) => {
       if (res) {
         walletStore.ME(res.data)

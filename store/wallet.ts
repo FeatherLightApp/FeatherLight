@@ -22,6 +22,7 @@ export default class WalletModule extends VuexModule {
     errorType = ''
     errorMessage = ''
     feed: Array<UserInvoice | PaidInvoice | Deposit> = []
+    loading = false
 
     @Mutation
     ME({ me }: MeQuery) {
@@ -34,6 +35,7 @@ export default class WalletModule extends VuexModule {
             this.errorMessage = me.message
         }
     }
+
 
     @Mutation
     ADD_INVOICE({ addInvoice }: AddInvoiceMutation) {
@@ -56,6 +58,11 @@ export default class WalletModule extends VuexModule {
     CLEAR_ERROR () {
         this.errorMessage = ''
         this.errorType = ''
+    }
+
+    @Mutation
+    LOADING (v: boolean) {
+        this.loading = v
     }
 
     get userInvoices (): UserInvoice[] {
