@@ -5,7 +5,7 @@
       v-toolbar-title
         | Lumen Wallet
       v-spacer
-      v-menu
+      v-menu(bottom fixed)
         template(v-slot:activator='{ on:menu }')
           v-tooltip(bottom)
             template(v-slot:activator='{ on:tooltip }')

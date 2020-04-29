@@ -7,7 +7,8 @@ export default {
     endpoint: 'https://dev.seanaye.ca/graphql/'
   },
   server: {
-    port: 3000
+    port: 3000,
+    host: '0.0.0.0'
   },
   /*
   ** Headers of the page

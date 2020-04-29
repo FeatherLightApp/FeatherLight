@@ -17,9 +17,8 @@
               |{{ item }}
           v-divider(light)
           v-expand-transition(mode='out-in')
-            transactions(v-show='tab === 1 && !loading' key='tx')
-          v-expand-transition(mode='out-in')
-            receive(v-if='tab == 2 && !loading' key='receive')
+            keep-alive
+              component(:is='computedComponent')
 
 
 </template>
@@ -33,7 +32,8 @@ export default defineComponent({
   middleware: ['loadAuth', 'assertAuthed'],
   components: {
     Receive: () => import('~/components/Receive.vue'),
-    Transactions: () => import('~/components/Transaction.vue')
+    Transactions: () => import('~/components/Transaction.vue'),
+    Send: () => import('~/components/Send.vue')
   },
   setup () {
     const { loading, onResult } = useMeQuery()
@@ -47,13 +47,24 @@ export default defineComponent({
       }
     })
 
+    const computedComponent = computed(() => {
+      if (tab.value == 0) {
+        return 'send'
+      } else if (tab.value == 1 && !loading.value) {
+        return 'transactions'
+      } else if (tab.value == 2) {
+        return 'receive'
+      }
+    })
+
     return {
       loading,
       tab,
       items,
       settingsStore,
       walletStore,
-      value
+      value,
+      computedComponent
     }
   }
 })

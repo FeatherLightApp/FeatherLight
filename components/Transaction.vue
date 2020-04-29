@@ -49,6 +49,7 @@ import useDateConversion from '~/composition/useDateConversion'
 import useClipboard from '~/composition/useClipboard'
 
 export default defineComponent({
+  name: 'transaction',
   setup (_ , {root}) {
     const { loading, onResult } = useFeedQuery()
     const { translate } = useCurrencyRounding()
