@@ -1,8 +1,8 @@
 <template lang="pug">
-  v-container
+  v-container.pb-0
     v-row
-      v-col(cols='12')
-        v-text-field(v-model='payReq' outlined)
+      v-col(cols='12').pb-0
+        v-text-field(v-model='payReq' outlined placeholder='Paste Payment Request')
 </template>
 <script lang="ts">
 import { defineComponent, ref, watch } from '@vue/composition-api'

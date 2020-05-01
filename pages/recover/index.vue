@@ -22,13 +22,9 @@ export default defineComponent({
     const username = computed(() => field.value.split(':')[0])
     const password = computed(() => field.value.split(':')[1])
 
-    const { mutate: mutateLogin, loading, onDone } = useLoginMutation({
-      variables: {
-        username: username.value,
-        password: password.value
-      }
-    })
+    const { mutate: mutateLogin, loading, onDone } = useLoginMutation()
 
+    // @ts-ignore
     onDone((res) => {
       if (res && res.data) {
         authStore.LOGIN(res.data)

@@ -574,7 +574,7 @@ export type DecodeInvoiceQuery = (
   { __typename?: 'Query' }
   & { decodeInvoice?: Maybe<(
     { __typename?: 'DecodedInvoice' }
-    & Pick<DecodedInvoice, 'numSatoshis' | 'description' | 'timestamp' | 'expiry' | 'paymentHash'>
+    & Pick<DecodedInvoice, 'numSatoshis' | 'description' | 'descriptionHash' | 'destination' | 'paymentHash' | 'paymentAddr' | 'timestamp' | 'expiry'>
   )> }
 );
 
@@ -813,9 +813,12 @@ export const DecodeInvoiceDocument = gql`
   decodeInvoice(invoice: $inv) {
     numSatoshis
     description
+    descriptionHash
+    destination
+    paymentHash
+    paymentAddr
     timestamp
     expiry
-    paymentHash
   }
 }
     `;

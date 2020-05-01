@@ -18,6 +18,6 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 #align-row {
-  height: calc(100% - 20px);
+  height: calc(100vh - 20px);
 }
 </style>

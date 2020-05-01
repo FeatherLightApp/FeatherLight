@@ -2,8 +2,11 @@ query DecodeInvoice ($inv: String!) {
     decodeInvoice(invoice: $inv) {
         numSatoshis
         description
+        descriptionHash
+        destination
+        paymentHash
+        paymentAddr
         timestamp
         expiry
-        paymentHash
     }
 }

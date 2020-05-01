@@ -1,14 +1,14 @@
 <template lang="pug">
-  v-container
+  v-container.py-0
     v-row
-      v-col(cols='12')
+      v-col(cols='12').py-0
         v-fade-transition(mode='out-in')
           qrcode-stream(v-if='mountScanner' @init='onInit' key='0' @decode='onDecode')
-          v-container(v-else key='1')
+          v-container(v-else key='1').pb-0
             v-row
-              v-col.text-center
+              v-col.text-center.pb-0
                 span.quaternary--text Could not access QR code scanner
-              v-col(cols='12')
+              v-col(cols='12').pb-0
                 v-file-input(@change='readCode' type='file' name='image' accept='image/*' capture='environment' outlined label='Choose QR Code')
 </template>
 <script lang="ts">
@@ -23,6 +23,11 @@ interface HTMLInputEvent extends Event {
 
 export default defineComponent({
   name: 'SendQr',
+  props: {
+    loading: {
+      type: Boolean
+    }
+  },
   components: {
     QrcodeStream: async () => {
       const { QrcodeStream } = await import('vue-qrcode-reader')
@@ -33,7 +38,6 @@ export default defineComponent({
     // set loading animation while scanner support is determined
     walletStore.LOADING(true)
 
-    const payReq = ref('')
 
     const mountScanner = ref(true)
     async function onInit(p: Promise<any>) {
@@ -50,17 +54,15 @@ export default defineComponent({
       if (event) {
         const res = await processFile(event)
         console.log({res})
-        payReq.value = res.content || ''
+        if (res.content) {
+          emit('payReq', res.content)
+        }
       }
     }
 
     function onDecode (decoded: string) {
-      payReq.value = decoded
+      emit('payReq', decoded)
     }
-
-    watch(payReq, () => {
-      emit('payReq', payReq.value)
-    })
 
     return {
       mountScanner,

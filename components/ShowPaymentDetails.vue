@@ -1,22 +1,23 @@
 <template lang="pug">
   v-simple-table
-    template(v-slot:default)
-      tbody
-        template(v-for='(v, k) in payReq' :key='k')
-          v-tooltip(
-            v-if='!!v'
-            top
-            :open-on-hover='false'
-            :disabled='toggle'
-          )
-            template(v-slot:activator='{ on }')
-              tr(v-on='on' @click='copyTimeout(v, $root)' @mouseout='isCopied=false')
-                td
-                  | {{k}}
-                td
-                  | {{v}}
-            span
-              | {{ 'Copied!' }}
+    tbody
+      template(v-for='(v, k) in payReq')
+        v-tooltip(
+          :key='k'
+          v-if='!!v && k != "__typename"'
+          top
+          :open-on-hover='false'
+          :disabled='toggle'
+        )
+          template(v-slot:activator='{ on }')
+            tr(v-on='on' @click='copyTimeout(v, $root)' @mouseout='isCopied=false')
+              td
+                | {{k}}
+              td
+                | {{v}}
+          span
+            | {{ 'Copied!' }}
+  
 </template>
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api'
@@ -30,12 +31,13 @@ export default defineComponent({
     }
   },
   setup (props) {
-    const { isCopied, copyTimeout } = useClipboard()
+    const { isCopied, copyTimeout, toggle } = useClipboard()
+
     
     return {
-      payReq: props.payReq,
       isCopied,
-      copyTimeout
+      copyTimeout,
+      toggle
     }
   }
 })

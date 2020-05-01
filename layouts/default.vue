@@ -30,7 +30,7 @@
             v-icon(:color='hover ? "primary": ""' v-on='on' @click='mutate').mx-3 mdi-logout
         | Logout
     v-content
-      v-row(justify='start' justify-lg='start' align='center')#align-row
+      v-row(justify='start' justify-lg='start' align='center')
         nuxt
     footer
 </template>
@@ -78,8 +78,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss" scoped>
-#align-row {
-  height: calc(80%);
-}
-</style>

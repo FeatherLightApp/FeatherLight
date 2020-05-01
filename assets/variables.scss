@@ -32,7 +32,7 @@ $headings: (
     'weight': 300
   ),
   'h2':(
-    'font-family': $body-font-family,
+    'font-family': $heading-font-family,
     'letter-spacing': initial,
     'size': #{60 / $rally-font-size}rem,
     'weight': 300

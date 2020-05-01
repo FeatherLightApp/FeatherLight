@@ -8,7 +8,7 @@
             v-row(justify='center')
               v-col(cols='12').text-right.overline.py-0
                 | Created: {{ walletStore.created }} 
-              v-col(cols='12').text-center.primary--text.display-4
+              v-col(cols='12').text-center.primary--text.display-3
                 | {{ value }}
                 span(v-if='walletStore.created').overline.white--text
                   |&nbsp;{{ settingsStore.currency }}
