@@ -1,20 +1,18 @@
 <template lang="pug">
   v-container
     v-row
-      v-col
+      v-col.px-0
         v-expand-transition(mode='out-in')
           v-expansion-panels(v-if='!storeLoading' flat multiple focusable accordion)
             v-expansion-panel(v-for='item in feed' :key='item.key' hover @click='resetToggle(0, $root)')
               v-expansion-panel-header
                 v-container(:class='[`${item.color}--text`]').py-0.title.font-weight-light
-                  v-row(align='center' no-gutters).mx-3
-                    v-col
-                      v-row
-                        v-icon(v-text='(item.__typename == "PaidInvoice") ? "mdi-cash-minus" : "mdi-cash-plus"' :color='item.color')
-                        div.pl-3
-                          | {{translate(item.amount)}} 
-                          span.white--text.overline
-                            | {{settingsStore.currency}}
+                  v-row(align='center')
+                    v-icon(v-text='(item.__typename == "PaidInvoice") ? "mdi-cash-minus" : "mdi-cash-plus"' :color='item.color')
+                    div.pl-3
+                      | {{translate(item.amount)}} 
+                      span.white--text.overline
+                        | {{settingsStore.currency}}
                     v-spacer
                     div.overline
                       |{{item.typeDesc}}

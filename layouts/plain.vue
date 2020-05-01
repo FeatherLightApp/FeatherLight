@@ -2,8 +2,9 @@
   v-app
     error-snackbar
     v-content
-      v-row(justify='start' justify-lg='start' align='center')#align-row
-        nuxt
+      v-container
+        v-row(justify='start' justify-lg='start' align='center')#align-row
+          nuxt
     core-footer
 </template>
 <script lang="ts">

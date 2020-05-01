@@ -30,8 +30,9 @@
             v-icon(:color='hover ? "primary": ""' v-on='on' @click='mutate').mx-3 mdi-logout
         | Logout
     v-content
-      v-row(justify='start' justify-lg='start' align='center')
-        nuxt
+      v-container
+        v-row(justify='start' justify-lg='start' align='center')
+          nuxt
     footer
 </template>
 <script lang="ts">
