@@ -34,7 +34,7 @@ export default {
   */
   css: [
     '~/assets/override.sass',
-    '~/assets/global.css'
+    '~/assets/global.scss'
   ],
   /*
   ** Plugins to load before mounting the App

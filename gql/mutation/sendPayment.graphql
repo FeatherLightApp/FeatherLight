@@ -1,0 +1,20 @@
+mutation sendPayment ($inv: String!) {
+    payInvoice (invoice: $inv) {
+        __typename
+        ... on Error {
+            errorType
+            message
+        }
+        ... on PaidInvoice {
+            amount
+            fee
+            paidAt
+            expiry
+            timestamp
+            paymentRequest
+            paymentHash
+            paymentPreimage
+            memo
+        }
+    }
+}

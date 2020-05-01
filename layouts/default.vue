@@ -33,17 +33,17 @@
       v-container
         v-row(justify='start' justify-lg='start' align='center')
           nuxt
-    footer
+    core-footer
 </template>
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api'
-import { settingsStore, authStore } from '../store'
+import { settingsStore, authStore } from '~/store'
 import { Currency } from '~/types/currency'
 import { useLogoutMutation } from '~/types/ApiTypes'
 
 export default defineComponent({
   components: {
-    Footer: () => import('~/components/core/Footer.vue'),
+    CoreFooter: () => import('~/components/core/Footer.vue'),
     ErrorSnackbar: () => import('~/components/core/ErrorSnackbar.vue')
   },
   setup (_, {root}) {

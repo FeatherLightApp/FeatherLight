@@ -10,9 +10,8 @@
                   v-row(align='center')
                     v-icon(v-text='(item.__typename == "PaidInvoice") ? "mdi-cash-minus" : "mdi-cash-plus"' :color='item.color')
                     div.pl-3
-                      | {{translate(item.amount)}} 
-                      span.white--text.overline
-                        | {{settingsStore.currency}}
+                      span.number {{translate(item.amount)}} 
+                      span.white--text.overline {{settingsStore.currency}}
                     v-spacer
                     div.overline
                       |{{item.typeDesc}}
