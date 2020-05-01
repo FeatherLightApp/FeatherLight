@@ -147,18 +147,6 @@
             "name": "Error"
           }
         ]
-      },
-      {
-        "kind": "UNION",
-        "name": "DecodeInvoiceresponse",
-        "possibleTypes": [
-          {
-            "name": "DecodeInvoicePayload"
-          },
-          {
-            "name": "Error"
-          }
-        ]
       }
     ]
   }

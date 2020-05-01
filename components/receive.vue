@@ -9,9 +9,8 @@
       div(v-show='method != 0').quaternary--text.overline.text-center
         | Standard Bitcoin payments are slow and prone to higher fees
     v-expand-transition(mode='out-in')
-      receive-lightning(v-show='method == 0' key='lightning')
-    v-expand-transition(mode='out-in')
-      receive-onchain(v-show='method != 0' key='btc')
+      keep-alive
+        component(:is='computedComponent')
 
 </template>
 <script lang="ts">
@@ -27,11 +26,12 @@ export default defineComponent({
     ReceiveOnchain: () => import('~/components/ReceiveOnchain.vue')
   },
   setup () {
-
+    const computedComponent = computed(() => method.value == 0 ? 'receive-lightning': 'receive-onchain')
     const method = ref(0)
 
     return {
-      method
+      method,
+      computedComponent
     }
   }
 })

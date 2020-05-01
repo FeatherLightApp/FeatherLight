@@ -113,9 +113,8 @@ export type ClosedChannel = {
   closingTxid: Scalars['String'];
 };
 
-export type DecodeInvoicePayload = {
-   __typename?: 'DecodeInvoicePayload';
-  error?: Maybe<Scalars['String']>;
+export type DecodedInvoice = {
+   __typename?: 'DecodedInvoice';
   destination?: Maybe<Scalars['String']>;
   paymentHash?: Maybe<Scalars['String']>;
   numSatoshis?: Maybe<Scalars['Int']>;
@@ -123,10 +122,8 @@ export type DecodeInvoicePayload = {
   expiry?: Maybe<Scalars['Int']>;
   description?: Maybe<Scalars['String']>;
   descriptionHash?: Maybe<Scalars['String']>;
-  fallbackAddr?: Maybe<Scalars['String']>;
+  paymentAddr?: Maybe<Scalars['B64']>;
 };
-
-export type DecodeInvoiceresponse = DecodeInvoicePayload | Error;
 
 export type Deposit = {
    __typename?: 'Deposit';
@@ -378,7 +375,7 @@ export type Query = {
   me: UserResponse;
   nodeBalance: BalanceResponse;
   channels: ChannelResponse;
-  decodeInvoice: DecodeInvoicePayload;
+  decodeInvoice?: Maybe<DecodedInvoice>;
   info: InfoPayload;
   genericRPC?: Maybe<Scalars['String']>;
 };
@@ -566,6 +563,19 @@ export type RefreshMacaroonsMutation = (
     { __typename: 'Error' }
     & Pick<Error, 'message' | 'errorType'>
   ) }
+);
+
+export type DecodeInvoiceQueryVariables = {
+  inv: Scalars['String'];
+};
+
+
+export type DecodeInvoiceQuery = (
+  { __typename?: 'Query' }
+  & { decodeInvoice?: Maybe<(
+    { __typename?: 'DecodedInvoice' }
+    & Pick<DecodedInvoice, 'numSatoshis' | 'description' | 'timestamp' | 'expiry' | 'paymentHash'>
+  )> }
 );
 
 export type FeedQueryVariables = {};
@@ -798,6 +808,39 @@ export function useRefreshMacaroonsMutation(baseOptions?: VueApolloComposable.Us
             return VueApolloComposable.useMutation<RefreshMacaroonsMutation, RefreshMacaroonsMutationVariables>(RefreshMacaroonsDocument, baseOptions);
           }
 export type RefreshMacaroonsMutationCompositionFunctionResult = ReturnType<typeof useRefreshMacaroonsMutation>;
+export const DecodeInvoiceDocument = gql`
+    query DecodeInvoice($inv: String!) {
+  decodeInvoice(invoice: $inv) {
+    numSatoshis
+    description
+    timestamp
+    expiry
+    paymentHash
+  }
+}
+    `;
+
+/**
+ * __useDecodeInvoiceQuery__
+ *
+ * To run a query within a Vue component, call `useDecodeInvoiceQuery` and pass it any options that fit your needs.
+ * When your component renders, `useDecodeInvoiceQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useDecodeInvoiceQuery(
+ *   {
+ *      inv: // value for 'inv'
+ *   }
+ * );
+ */
+type ReactiveFunctionDecodeInvoiceQuery = () => DecodeInvoiceQueryVariables
+export function useDecodeInvoiceQuery(variables: DecodeInvoiceQueryVariables | VueCompositionApi.Ref<DecodeInvoiceQueryVariables> | ReactiveFunctionDecodeInvoiceQuery, baseOptions?: VueApolloComposable.UseQueryOptions<DecodeInvoiceQuery, DecodeInvoiceQueryVariables>) {
+          return VueApolloComposable.useQuery<DecodeInvoiceQuery, DecodeInvoiceQueryVariables>(DecodeInvoiceDocument, variables, baseOptions);
+        }
+export type DecodeInvoiceQueryCompositionFunctionResult = ReturnType<typeof useDecodeInvoiceQuery>;
 export const FeedDocument = gql`
     query Feed {
   me {

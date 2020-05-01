@@ -56,7 +56,12 @@ export default defineComponent({
       set: (val) => settingsStore.changeCurrency(val)
     })
 
-    const { mutate, onDone, loading: submitting } = useAddInvoiceMutation()
+    const { mutate, onDone, loading: submitting } = useAddInvoiceMutation({
+      variables: {
+        memo: memo.value,
+        amt: +amt.value
+      }
+    })
 
     onDone((res) => {
       if (res && res.data) {

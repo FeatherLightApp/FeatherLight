@@ -19,7 +19,15 @@ import { authStore } from '~/store'
 export default defineComponent({
   layout: 'plain',
   setup (_, {root}) {
-    const { mutate: mutateLogin, loading, onDone } = useLoginMutation()
+    const username = computed(() => field.value.split(':')[0])
+    const password = computed(() => field.value.split(':')[1])
+
+    const { mutate: mutateLogin, loading, onDone } = useLoginMutation({
+      variables: {
+        username: username.value,
+        password: password.value
+      }
+    })
 
     onDone((res) => {
       if (res && res.data) {
@@ -30,8 +38,6 @@ export default defineComponent({
 
     const field = ref('')
 
-    const username = computed(() => field.value.split(':')[0])
-    const password = computed(() => field.value.split(':')[1])
 
     function validate (val: string) {
       return val.length == 41 && username.value.length == 20 && !!password.value.length || 'Invalid recovery key'

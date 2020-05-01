@@ -4,7 +4,7 @@
       v-col
         v-expand-transition(mode='out-in')
           v-expansion-panels(v-if='!storeLoading' flat multiple focusable accordion)
-            v-expansion-panel(v-for='item in feed' :key='item.key' hover @click='resetToggle(0)')
+            v-expansion-panel(v-for='item in feed' :key='item.key' hover @click='resetToggle(0, $root)')
               v-expansion-panel-header
                 v-container(:class='[`${item.color}--text`]').py-0.title.font-weight-light
                   v-row(align='center' no-gutters).mx-3
@@ -30,7 +30,7 @@
                         :disabled='toggle'
                       )
                         template(v-slot:activator='{ on }')
-                          tr(v-on='on' @click='copyTimeout(v)' @mouseout='isCopied=false')
+                          tr(v-on='on' @click='copyTimeout(v, $root)' @mouseout='isCopied=false')
                             td
                               | {{k}}
                             td
@@ -54,24 +54,10 @@ export default defineComponent({
     const { loading, onResult } = useFeedQuery()
     const { translate } = useCurrencyRounding()
     const { epochToHuman } = useDateConversion()
-    const { copy, isCopied } = useClipboard()
-    const toggle = ref(false)
+    const { copy, isCopied, toggle, copyTimeout, resetToggle } = useClipboard()
 
     watchEffect(() => walletStore.LOADING(loading.value))
 
-    function copyTimeout(v: string) {
-      copy(v)
-      resetToggle(2000)
-    }
-
-    function resetToggle(t: number) {
-      setTimeout(()=>{
-        toggle.value = true
-        root.$nextTick(()=>{
-          toggle.value = false
-        })
-      }, t)
-    }
 
     const feed = computed(() => {
       return walletStore.feed.map(e => {

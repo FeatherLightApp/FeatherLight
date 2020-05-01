@@ -62,6 +62,7 @@ export default defineComponent({
       }
     })
 
+    // @ts-ignore
     onDone((res) => {
       if (res && res.data) {
         authStore.LOGOUT(res.data)
