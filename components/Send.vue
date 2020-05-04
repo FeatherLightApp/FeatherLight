@@ -14,13 +14,14 @@
     v-expand-transition(mode='out-in')
       div(v-if='result && result.decodeInvoice')
         show-payment-details(:payReq='result.decodeInvoice')
-        v-btn(block @click='').my-3 Send Payment
+        v-btn(block @click='mutate({inv: payReq})' :loading='sending').my-3 Send Payment
+        div(v-if='paymentError').tertiary--text {{ paymentError }}
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed, watchEffect } from '@vue/composition-api'
 import  useValidation from '~/composition/useValidation'
 import { settingsStore, walletStore } from '~/store'
-import { useAddInvoiceMutation, useDecodeInvoiceQuery } from '~/types/ApiTypes'
+import { useAddInvoiceMutation, useDecodeInvoiceQuery, useSendPaymentMutation } from '~/types/ApiTypes'
 
 
 export default defineComponent({
@@ -31,19 +32,29 @@ export default defineComponent({
     ShowPaymentDetails: () => import('~/components/ShowPaymentDetails.vue')
   },
   setup () {
-    const qrcode = ref('')
+    const payReq = ref('')
+    const paymentError = ref('')
 
     const variables = computed(() => ({
-      inv: qrcode.value
+      inv: payReq.value
     }))
     const options = computed(() => ({
-      enabled: !!qrcode.value
+      enabled: !!payReq.value
     }))
     // @ts-ignore
     const { result, loading } = useDecodeInvoiceQuery(variables, options)
+    const { mutate, loading: sending, onDone } = useSendPaymentMutation()
+
+    onDone(res => {
+      if (!!res && res.data && res.data.payInvoice.__typename == 'Error') {
+         paymentError.value = res.data.payInvoice.message
+      }
+    })
 
     function decodeInvoice (code: string) {
-      qrcode.value = code
+      console.log({code})
+      payReq.value = code
+      paymentError.value = ''
     }
 
     const computedComponent = computed(() => (method.value == 0) ? 'send-qr' : 'send-paste')
@@ -55,7 +66,11 @@ export default defineComponent({
       computedComponent,
       decodeInvoice,
       result,
-      loading
+      loading,
+      payReq,
+      sending,
+      mutate,
+      paymentError
     }
   }
 })

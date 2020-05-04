@@ -49,6 +49,7 @@ export default class WalletModule extends VuexModule {
 
     @Mutation
     FEED ({ me }: FeedQuery) {
+        console.log({me})
         if (me.__typename == 'User' && me.feed) {
             this.feed = me.feed.filter(notEmpty)
         }

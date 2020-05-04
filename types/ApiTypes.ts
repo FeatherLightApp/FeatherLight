@@ -565,6 +565,22 @@ export type RefreshMacaroonsMutation = (
   ) }
 );
 
+export type SendPaymentMutationVariables = {
+  inv: Scalars['String'];
+};
+
+
+export type SendPaymentMutation = (
+  { __typename?: 'Mutation' }
+  & { payInvoice: (
+    { __typename: 'PaidInvoice' }
+    & Pick<PaidInvoice, 'amount' | 'fee' | 'paidAt' | 'expiry' | 'timestamp' | 'paymentRequest' | 'paymentHash' | 'paymentPreimage' | 'memo'>
+  ) | (
+    { __typename: 'Error' }
+    & Pick<Error, 'errorType' | 'message'>
+  ) }
+);
+
 export type DecodeInvoiceQueryVariables = {
   inv: Scalars['String'];
 };
@@ -808,6 +824,50 @@ export function useRefreshMacaroonsMutation(baseOptions?: VueApolloComposable.Us
             return VueApolloComposable.useMutation<RefreshMacaroonsMutation, RefreshMacaroonsMutationVariables>(RefreshMacaroonsDocument, baseOptions);
           }
 export type RefreshMacaroonsMutationCompositionFunctionResult = ReturnType<typeof useRefreshMacaroonsMutation>;
+export const SendPaymentDocument = gql`
+    mutation sendPayment($inv: String!) {
+  payInvoice(invoice: $inv) {
+    __typename
+    ... on Error {
+      errorType
+      message
+    }
+    ... on PaidInvoice {
+      amount
+      fee
+      paidAt
+      expiry
+      timestamp
+      paymentRequest
+      paymentHash
+      paymentPreimage
+      memo
+    }
+  }
+}
+    `;
+
+/**
+ * __useSendPaymentMutation__
+ *
+ * To run a mutation, you first call `useSendPaymentMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useSendPaymentMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useSendPaymentMutation({
+ *   variables: {
+ *      inv: // value for 'inv'
+ *   },
+ * });
+ */
+export function useSendPaymentMutation(baseOptions?: VueApolloComposable.UseMutationOptions<SendPaymentMutation, SendPaymentMutationVariables>) {
+            return VueApolloComposable.useMutation<SendPaymentMutation, SendPaymentMutationVariables>(SendPaymentDocument, baseOptions);
+          }
+export type SendPaymentMutationCompositionFunctionResult = ReturnType<typeof useSendPaymentMutation>;
 export const DecodeInvoiceDocument = gql`
     query DecodeInvoice($inv: String!) {
   decodeInvoice(invoice: $inv) {

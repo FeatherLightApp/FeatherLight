@@ -10,28 +10,29 @@
         | Standard Bitcoin payments are slow and prone to higher fees
     v-expand-transition(mode='out-in')
       keep-alive
-        component(:is='computedComponent')
+        component(:is='computedComponent' :code='btcAddress')
 
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed } from '@vue/composition-api'
 import  useValidation from '~/composition/useValidation'
-import { settingsStore } from '~/store'
+import { settingsStore, walletStore } from '~/store'
 import { useAddInvoiceMutation } from '~/types/ApiTypes'
 
 export default defineComponent({
   name: 'receive',
   components: {
     ReceiveLightning: () => import('~/components/ReceiveLightning.vue'),
-    ReceiveOnchain: () => import('~/components/ReceiveOnchain.vue')
+    DisplayCode: () => import('~/components/DisplayCode.vue')
   },
   setup () {
-    const computedComponent = computed(() => method.value == 0 ? 'receive-lightning': 'receive-onchain')
+    const computedComponent = computed(() => method.value == 0 ? 'receive-lightning': 'display-code')
     const method = ref(0)
-
+    const btcAddress = computed(() => walletStore.btcAddress)
     return {
       method,
-      computedComponent
+      computedComponent,
+      btcAddress
     }
   }
 })

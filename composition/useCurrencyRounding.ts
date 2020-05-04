@@ -6,7 +6,7 @@ const useCurrencyRounding = () => {
 
     function translate(val: number) {
         if (settingsStore.currency == 'sats') {
-            return val
+            return +val
         }
         const unrounded = val / (settingsStore.rate * 100000000) //btc to sat to true val
         if (settingsStore.currency == Currency.JPY) {
@@ -16,11 +16,28 @@ const useCurrencyRounding = () => {
         }
     }
 
+    const multiplier = computed(() => {
+        if (settingsStore.currency == 'sats') {
+            return 1
+        }
+        return 1 / (settingsStore.rate * 100000000)
+    })
+
+    function round (val: number) {
+        if (settingsStore.currency == Currency.JPY) {
+            return Math.round(val + Number.EPSILON)
+        } else {
+            return Math.round((val + Number.EPSILON) * 100 ) / 100
+        }
+    }
+
     const value = computed(() => translate(walletStore.balance))
 
     return {
         translate,
-        value
+        value,
+        multiplier,
+        round
     }
 }
 

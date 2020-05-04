@@ -1,11 +1,11 @@
 <template lang="pug">
   v-container(fluid)
     v-col.text-center
-      qrcode-vue(:value='address' size="200" background="#33333d" foreground='#1EB980')
+      qrcode-vue(:value='code' size="200" background="#33333d" foreground='#1EB980')
       v-tooltip(top)
         template(v-slot:activator='{ on }')
-          div(v-on='on' @click='copy(address)').mt-3
-            | {{ address }}
+          div(v-on='on' @click='copy(code)').mt-3
+            | {{ code }}
         | {{ isCopied ? 'Copied to clipboard!' : 'Click to copy' }}
 
 
@@ -16,15 +16,19 @@ import { walletStore } from '~/store'
 import useClipboard from '~/composition/useClipboard'
 
 export default defineComponent({
-  name: 'receive-onchain',
+  name: 'display-code',
+  props: {
+    code: {
+      type: String,
+      required: true
+    }
+  },
   components: {
     QrcodeVue: () => import('qrcode.vue')
   },
-  setup () {
+  setup (props) {
     const { isCopied, copy } = useClipboard()
-    const address = computed(() => walletStore.btcAddress)
     return {
-      address,
       isCopied,
       copy
     }

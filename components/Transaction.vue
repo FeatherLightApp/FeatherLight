@@ -10,7 +10,7 @@
                   v-row(align='center')
                     v-icon(v-text='(item.__typename == "PaidInvoice") ? "mdi-cash-minus" : "mdi-cash-plus"' :color='item.color')
                     div.pl-3
-                      span.number {{translate(item.amount)}} 
+                      span(style="font-family: 'Eczar', sans-serif;") {{item.totalAmount}} 
                       span.white--text.overline {{settingsStore.currency}}
                     v-spacer
                     div.overline
@@ -19,21 +19,22 @@
                 v-simple-table
                   template(v-slot:default)
                     tbody
-                      v-tooltip(
-                        top
-                        v-for='(v, k) in formatItem(item)'
-                        :key='k'
-                        :open-on-hover='false'
-                        :disabled='toggle'
-                      )
-                        template(v-slot:activator='{ on }')
-                          tr(v-on='on' @click='copyTimeout(v, $root)' @mouseout='isCopied=false')
-                            td
-                              | {{k}}
-                            td
-                              | {{v}}
-                        span
-                          | {{ 'Copied!' }}
+                      template(v-for='(v, k) in item.table')
+                        v-tooltip(
+                          v-if='typeof(v) == "number" || !!v'
+                          top
+                          :key='k'
+                          :open-on-hover='false'
+                          :disabled='toggle'
+                        )
+                          template(v-slot:activator='{ on }')
+                            tr(v-on='on' @click='copyTimeout(v, $root)' @mouseout='isCopied=false')
+                              td
+                                | {{k}}
+                              td.text-break
+                                | {{v}}
+                          span
+                            | {{ 'Copied!' }}
                       
 
 </template>
@@ -49,7 +50,7 @@ export default defineComponent({
   name: 'transaction',
   setup (_ , {root}) {
     const { loading, onResult } = useFeedQuery()
-    const { translate } = useCurrencyRounding()
+    const { multiplier, round } = useCurrencyRounding()
     const { epochToHuman } = useDateConversion()
     const { copy, isCopied, toggle, copyTimeout, resetToggle } = useClipboard()
 
@@ -62,46 +63,64 @@ export default defineComponent({
           return Object.assign(e, {
             color: (e.confirmations >= 3) ? 'primary' : 'white',
             key: e.txid,
-            typeDesc: 'Onchain Deposit'
+            typeDesc: 'Onchain Deposit',
+            totalAmount: round(e.amount * multiplier.value),
+            table: {
+              Address: e.address,
+              Amount: `${round(e.amount * multiplier.value)} ${settingsStore.currency}`,
+              Confirmations: e.confirmations,
+              Comment: e.comment,
+              'Block Hash': e.blockhash,
+              'Block Time': epochToHuman(e.blocktime),
+              TxID: e.txid,
+              Time: epochToHuman(e.time),
+              Received: epochToHuman(e.timereceived)
+            }
           })
         } else if (e.__typename == 'PaidInvoice') {
           return Object.assign(e, {
             color: 'quaternary',
             key: e.paymentHash,
-            typeDesc: 'Lightning Payment'
+            typeDesc: 'Lightning Payment',
+            totalAmount: round(multiplier.value * (e.amount + e.fee)),
+            table: {
+              Amount: `${round(multiplier.value * e.amount)} ${settingsStore.currency}`,
+              Fee: round(multiplier.value * e.fee),
+              Total: round(multiplier.value * (e.amount + e.fee)),
+              Memo: e.memo,
+              'Paid At': e.paidAt ? epochToHuman(e.paidAt) : '',
+              Timestamp: e.timestamp,
+              'Payment Hash': e.paymentHash,
+              'Preimage': e.paymentPreimage
+            }
           })
         } else if (e.__typename == 'UserInvoice') {
           return Object.assign(e, {
             color: (e.paid) ? 'primary' : 'white',
+            tooltip: e.paid ? '' : 'This balance will be added to your wallet once the invoice is paid',
             key: e.paymentHash,
-            typeDesc: 'Lightning Invoice'
+            typeDesc: 'Lightning Invoice',
+            totalAmount: round(multiplier.value * e.amount),
+            table: {
+              Amount: `${round(multiplier.value * e.amount)} ${settingsStore.currency}`,
+              Status: e.paid ? 'Paid' : 'Not paid',
+              Memo: e.memo,
+              'Paid At': e.paidAt ? epochToHuman(e.paidAt) : '',
+              'Expires At': epochToHuman(e.timestamp + e.expiry),
+              Timestamp: epochToHuman(e.timestamp),
+              'Payment Request': e.paymentRequest,
+              'Payment Hash': e.paymentHash,
+              'Preimage': e.paymentPreimage
+            }
           })
         }
       })
     })
 
-    function formatItem(i: Deposit | UserInvoice | PaidInvoice) {
-      if (i.__typename == 'Deposit') {
-        const table = {
-          Address: i.address,
-          Amount: `${translate(i.amount)} ${settingsStore.currency}`,
-          Confirmations: i.confirmations,
-          'Block Hash': i.blockhash,
-          'Block Time': epochToHuman(i.blocktime),
-          TxID: i.txid,
-          Time: epochToHuman(i.time),
-          Received: epochToHuman(i.timereceived)
-        }
-        if (!!i.comment) {
-          return { Comment: i.comment, ...table}
-        }
-        return table
-      }
-    }
-
     const storeLoading = computed(() => walletStore.loading)
 
     onResult((res) => {
+      console.log({res})
       if (res && res.data) {
         walletStore.FEED(res.data)
       }
@@ -110,10 +129,8 @@ export default defineComponent({
     return {
       feed,
       settingsStore,
-      translate,
       epochToHuman,
       storeLoading,
-      formatItem,
       copyTimeout,
       isCopied,
       toggle,
