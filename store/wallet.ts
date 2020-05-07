@@ -1,5 +1,5 @@
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
-import { MeQuery, UserInvoice, PaidInvoice, Deposit, AddInvoiceMutation, FeedQuery } from '~/types/ApiTypes'
+import { MeQuery, UserInvoice, PaidInvoice, Deposit, AddInvoiceMutation, FeedQuery, SendPaymentMutation } from '~/types/ApiTypes'
 
 
 function notEmpty<T>(v: T | null | undefined): v is T {
@@ -40,10 +40,20 @@ export default class WalletModule extends VuexModule {
     @Mutation
     ADD_INVOICE({ addInvoice }: AddInvoiceMutation) {
         if (addInvoice.__typename == 'UserInvoice') {
-            this.feed = [...this.feed, addInvoice]
+            this.feed = [addInvoice, ...this.feed]
         } else {
             this.errorType = addInvoice.errorType
             this.errorMessage = addInvoice.message
+        }
+    }
+
+    @Mutation
+    ADD_PAID_INVOICE({ payInvoice }: SendPaymentMutation) {
+        if (payInvoice.__typename == 'PaidInvoice') {
+            this.feed = [payInvoice, ...this.feed]
+        } else {
+            this.errorType = payInvoice.errorType
+            this.errorMessage = payInvoice.message
         }
     }
 

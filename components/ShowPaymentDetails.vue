@@ -2,22 +2,9 @@
   v-simple-table
     tbody
       template(v-for='(v, k) in table')
-        v-tooltip(
-          :key='k'
-          v-if='!!v && k != "__typename"'
-          top
-          :open-on-hover='false'
-          :disabled='toggle'
-        )
-          template(v-slot:activator='{ on }')
-            tr(v-on='on' @click='copyTimeout(v, $root)' @mouseout='isCopied=false')
-              td
-                | {{k}}
-              td
-                | {{v}}
-          span
-            | {{ 'Copied!' }}
-  
+        tr(v-if='!!v && k != "__typename"' :key='k')
+          td {{k}}
+          copy-td(:text='v') 
 </template>
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api'
@@ -34,8 +21,11 @@ export default defineComponent({
       required: true
     }
   },
+  components: {
+    CopyTd: () => import('~/components/core/CopyTd.vue')
+  },
   setup (props) {
-    const { isCopied, copyTimeout, toggle } = useClipboard()
+    const { isCopied, copy } = useClipboard()
     const { round, multiplier } = useCurrencyRounding()
     const { epochToHuman } = useDateConversion()
 
@@ -51,8 +41,7 @@ export default defineComponent({
 
     return {
       isCopied,
-      copyTimeout,
-      toggle,
+      copy,
       table
     }
   }

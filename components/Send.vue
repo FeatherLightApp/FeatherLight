@@ -46,6 +46,9 @@ export default defineComponent({
     const { mutate, loading: sending, onDone } = useSendPaymentMutation()
 
     onDone(res => {
+      if (!!res && res.data) {
+        walletStore.ADD_PAID_INVOICE(res.data)
+      }
       if (!!res && res.data && res.data.payInvoice.__typename == 'Error') {
          paymentError.value = res.data.payInvoice.message
       }

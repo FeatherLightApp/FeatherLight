@@ -4,7 +4,7 @@
       v-col.px-0
         v-expand-transition(mode='out-in')
           v-expansion-panels(v-if='!storeLoading' flat multiple focusable accordion)
-            v-expansion-panel(v-for='item in feed' :key='item.key' hover @click='resetToggle(0, $root)')
+            v-expansion-panel(v-for='item in feed' :key='item.key' hover)
               v-expansion-panel-header
                 v-container(:class='[`${item.color}--text`]').py-0.title.font-weight-light
                   v-row(align='center')
@@ -20,21 +20,9 @@
                   template(v-slot:default)
                     tbody
                       template(v-for='(v, k) in item.table')
-                        v-tooltip(
-                          v-if='typeof(v) == "number" || !!v'
-                          top
-                          :key='k'
-                          :open-on-hover='false'
-                          :disabled='toggle'
-                        )
-                          template(v-slot:activator='{ on }')
-                            tr(v-on='on' @click='copyTimeout(v, $root)' @mouseout='isCopied=false')
-                              td
-                                | {{k}}
-                              td.text-break
-                                | {{v}}
-                          span
-                            | {{ 'Copied!' }}
+                        tr(v-if='typeof(v) == "number" || !!v')
+                          td {{k}}
+                          copy-td(:text='v')
                       
 
 </template>
@@ -48,11 +36,14 @@ import useClipboard from '~/composition/useClipboard'
 
 export default defineComponent({
   name: 'transaction',
+  components: {
+    CopyTd: () => import('~/components/core/CopyTd.vue')
+  },
   setup (_ , {root}) {
     const { loading, onResult } = useFeedQuery()
     const { multiplier, round } = useCurrencyRounding()
     const { epochToHuman } = useDateConversion()
-    const { copy, isCopied, toggle, copyTimeout, resetToggle } = useClipboard()
+    const { copy, isCopied } = useClipboard()
 
     watchEffect(() => walletStore.LOADING(loading.value))
 
@@ -131,10 +122,8 @@ export default defineComponent({
       settingsStore,
       epochToHuman,
       storeLoading,
-      copyTimeout,
       isCopied,
-      toggle,
-      resetToggle
+      copy
     }
   }
 })

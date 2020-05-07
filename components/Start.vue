@@ -17,8 +17,6 @@ import { useCreateUserMutation } from '~/types/ApiTypes'
 import { authStore } from '~/store'
 
 export default defineComponent({
-  middleware: ['loadAuth', 'assertUnAuthed'],
-  layout: 'plain',
   setup (_, { root }) {
     const { mutate: mutateCreate, loading, onDone } = useCreateUserMutation()
 
