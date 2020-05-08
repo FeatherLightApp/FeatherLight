@@ -1,5 +1,6 @@
 <template lang="pug">
   v-container
+    v-progress-linear(v-if='loading' stream buffer-value='0' color="quaternary" absolute top)
     v-row
       v-col.px-0
         v-expand-transition(mode='out-in')
@@ -40,13 +41,12 @@ export default defineComponent({
     CopyTd: () => import('~/components/core/CopyTd.vue')
   },
   setup (_ , {root}) {
-    const { loading, onResult } = useFeedQuery()
+    const { loading, onResult } = useFeedQuery({}, { pollInterval: 5000 })
     const { multiplier, round } = useCurrencyRounding()
     const { epochToHuman } = useDateConversion()
     const { copy, isCopied } = useClipboard()
 
     watchEffect(() => walletStore.LOADING(loading.value))
-
 
     const feed = computed(() => {
       return walletStore.feed.map(e => {
@@ -123,7 +123,8 @@ export default defineComponent({
       epochToHuman,
       storeLoading,
       isCopied,
-      copy
+      copy,
+      loading
     }
   }
 })

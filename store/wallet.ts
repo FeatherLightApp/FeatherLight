@@ -62,6 +62,7 @@ export default class WalletModule extends VuexModule {
         console.log({me})
         if (me.__typename == 'User' && me.feed) {
             this.feed = me.feed.filter(notEmpty)
+            this.balance = me.balance
         }
     }
 

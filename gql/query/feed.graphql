@@ -2,7 +2,8 @@ query Feed {
     me {
         __typename
         ... on User {
-            feed(paid: false limit:10 confirmations:0) {
+            balance
+            feed(paid:false limit:10 confirmations:0 expired:false) {
                 __typename
                 ... on UserInvoice {
                     memo

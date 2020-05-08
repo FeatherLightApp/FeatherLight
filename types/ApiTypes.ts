@@ -59,6 +59,7 @@ export type BaseUserDepositsArgs = {
 export type BaseUserFeedArgs = {
   confirmations?: Maybe<Scalars['Int']>;
   paid?: Maybe<Scalars['Boolean']>;
+  expired?: Maybe<Scalars['Boolean']>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
 };
@@ -91,12 +92,12 @@ export type ChannelBalance = {
 
 export type ChannelPayload = {
    __typename?: 'ChannelPayload';
-  open: Array<Maybe<Channel>>;
-  pending: PendingChannelsResponse;
+  openChannels: Array<Maybe<Channel>>;
+  pendingChannels: PendingChannelsResponse;
 };
 
 
-export type ChannelPayloadOpenArgs = {
+export type ChannelPayloadOpenChannelsArgs = {
   active?: Maybe<Scalars['Boolean']>;
   inactive?: Maybe<Scalars['Boolean']>;
   public?: Maybe<Scalars['Boolean']>;
@@ -130,9 +131,9 @@ export type Deposit = {
   address: Scalars['String'];
   amount: Scalars['Int'];
   confirmations: Scalars['Int'];
-  blockhash: Scalars['String'];
-  blockindex: Scalars['Int'];
-  blocktime: Scalars['Int'];
+  blockhash?: Maybe<Scalars['String']>;
+  blockindex?: Maybe<Scalars['Int']>;
+  blocktime?: Maybe<Scalars['Int']>;
   txid: Scalars['String'];
   time: Scalars['Int'];
   timereceived: Scalars['Int'];
@@ -150,7 +151,8 @@ export enum ErrorType {
   AuthenticationError = 'AuthenticationError',
   PaymentError = 'PaymentError',
   RateLimited = 'RateLimited',
-  InsufficientFunds = 'InsufficientFunds'
+  InsufficientFunds = 'InsufficientFunds',
+  InvalidInvoice = 'InvalidInvoice'
 }
 
 export type FeedItem = Deposit | PaidInvoice | UserInvoice;
@@ -304,6 +306,7 @@ export type NewUserDepositsArgs = {
 export type NewUserFeedArgs = {
   confirmations?: Maybe<Scalars['Int']>;
   paid?: Maybe<Scalars['Boolean']>;
+  expired?: Maybe<Scalars['Boolean']>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
 };
@@ -450,6 +453,7 @@ export type UserDepositsArgs = {
 export type UserFeedArgs = {
   confirmations?: Maybe<Scalars['Int']>;
   paid?: Maybe<Scalars['Boolean']>;
+  expired?: Maybe<Scalars['Boolean']>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
 };
@@ -601,6 +605,7 @@ export type FeedQuery = (
   { __typename?: 'Query' }
   & { me: (
     { __typename: 'User' }
+    & Pick<User, 'balance'>
     & { feed: Array<Maybe<(
       { __typename: 'Deposit' }
       & Pick<Deposit, 'address' | 'amount' | 'confirmations' | 'blockhash' | 'blockindex' | 'blocktime' | 'txid' | 'time' | 'timereceived' | 'comment'>
@@ -909,7 +914,8 @@ export const FeedDocument = gql`
   me {
     __typename
     ... on User {
-      feed(paid: false, limit: 10, confirmations: 0) {
+      balance
+      feed(paid: false, limit: 10, confirmations: 0, expired: false) {
         __typename
         ... on UserInvoice {
           memo
