@@ -4,9 +4,9 @@
       qrcode-vue(:value='code' size="200" background="#33333d" foreground='#1EB980')
       v-tooltip(top)
         template(v-slot:activator='{ on }')
-          div(v-on='on' @click='copy(code)').mt-3
+          div(@click='copy(code)' v-on='on').mt-3
             | {{ code }}
-        | {{ isCopied ? 'Copied to clipboard!' : 'Click to copy' }}
+        span {{ isCopied ? 'Copied!' : 'Click to copy' }}
 
 
 </template>

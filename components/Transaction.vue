@@ -62,7 +62,7 @@ export default defineComponent({
               Confirmations: e.confirmations,
               Comment: e.comment,
               'Block Hash': e.blockhash,
-              'Block Time': epochToHuman(e.blocktime),
+              'Block Time': e.blocktime ? epochToHuman(e.blocktime) : null,
               TxID: e.txid,
               Time: epochToHuman(e.time),
               Received: epochToHuman(e.timereceived)
