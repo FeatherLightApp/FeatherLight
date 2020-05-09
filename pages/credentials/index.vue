@@ -19,6 +19,7 @@ import useClipboard from '~/composition/useClipboard'
 
 export default defineComponent({
   middleware: ['assertAuthed', 'assertNewUser'],
+  layout: 'plain',
   setup () {
     const recoveryKey = computed(() => `${authStore.username}:${authStore.password}`)
     const { isCopied, copy } = useClipboard()

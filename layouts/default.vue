@@ -30,7 +30,7 @@
         | Logout
     v-content
       v-container
-        v-row(justify='start' justify-lg='start' align='center')
+        v-row(justify='center' align='start')
           nuxt
     core-footer
 </template>
@@ -65,7 +65,7 @@ export default defineComponent({
     onDone((res) => {
       if (res && res.data) {
         authStore.LOGOUT(res.data)
-        root.$router.push('/start')
+        root.$router.push('/')
       }
     })
 
