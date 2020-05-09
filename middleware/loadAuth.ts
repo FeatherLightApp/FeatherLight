@@ -32,7 +32,7 @@ const loadAuth: Middleware = async ({ $axios }: Context) => {
             authStore.REFRESH_MACAROONS(res.data.data)
         }
     }
-    if (authStore.isAuthenticated && !settingsStore.init) {
+    if (authStore.isAuthenticated) {
         const cur = window.localStorage.getItem('currency')
         if (cur) {
             await settingsStore.changeCurrency(cur)

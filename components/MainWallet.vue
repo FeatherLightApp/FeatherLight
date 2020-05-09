@@ -33,7 +33,11 @@ export default defineComponent({
     const { loading, onResult } = useMeQuery()
     const { value } = useCurrencyRounding()
 
-    const tab = ref(1)
+    const tab = computed({
+      get: () => settingsStore.activeTab,
+      set: (v: number) => settingsStore.TAB(v)
+    })
+    
     const items = ref(['send', 'transactions', 'receive'])
     onResult((res) => {
       if (res) {
@@ -53,10 +57,11 @@ export default defineComponent({
 
     const activeElem = ref<HTMLElement>(null)
 
-    watch(activeElem => {
-      if (computedComponent.value == 'transactions') {
+    watch(activeElem, () => {
+      if (computedComponent.value == 'transactions' && activeElem.value) {
+        console.log('refetch')
         // @ts-ignore
-        activeElem.refetch()
+        activeElem.value.refetch()
       }
     })
 

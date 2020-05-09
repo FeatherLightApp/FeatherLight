@@ -13,11 +13,11 @@ interface CurrencyPayload {
     namespaced: true
 })
 export default class SetttingsModule extends VuexModule {
-    init = false
     currency = Currency.sats
     currencies = Object.keys(Currency)
     rate = 1
     loading = false
+    activeTab = 1
 
     @Mutation
     SET_CURRENCY({ currency, rate}: CurrencyPayload) {
@@ -32,10 +32,9 @@ export default class SetttingsModule extends VuexModule {
     }
 
     @Mutation
-    INIT() {
-        this.init = true
+    TAB (val: number) {
+        this.activeTab = val
     }
-
 
     @Action
     async changeCurrency(currency: Currency | string) { // string is used when setting value from localstorage
