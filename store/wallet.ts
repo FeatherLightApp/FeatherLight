@@ -19,8 +19,6 @@ export default class WalletModule extends VuexModule {
     balance = 0
     created = 0
     btcAddress = ''
-    errorType = ''
-    errorMessage = ''
     feed: Array<UserInvoice | PaidInvoice | Deposit> = []
     loading = false
 
@@ -30,9 +28,6 @@ export default class WalletModule extends VuexModule {
             this.balance = me.balance
             this.created = me.created
             this.btcAddress = me.btcAddress
-        } else {
-            this.errorType = me.errorType
-            this.errorMessage = me.message
         }
     }
 
@@ -41,9 +36,6 @@ export default class WalletModule extends VuexModule {
     ADD_INVOICE({ addInvoice }: AddInvoiceMutation) {
         if (addInvoice.__typename == 'UserInvoice') {
             this.feed = [addInvoice, ...this.feed]
-        } else {
-            this.errorType = addInvoice.errorType
-            this.errorMessage = addInvoice.message
         }
     }
 
@@ -51,26 +43,17 @@ export default class WalletModule extends VuexModule {
     ADD_PAID_INVOICE({ payInvoice }: SendPaymentMutation) {
         if (payInvoice.__typename == 'PaidInvoice') {
             this.feed = [payInvoice, ...this.feed]
-        } else {
-            this.errorType = payInvoice.errorType
-            this.errorMessage = payInvoice.message
         }
     }
 
     @Mutation
     FEED ({ me }: FeedQuery) {
-        console.log({me})
         if (me.__typename == 'User' && me.feed) {
             this.feed = me.feed.filter(notEmpty)
             this.balance = me.balance
         }
     }
 
-    @Mutation
-    CLEAR_ERROR () {
-        this.errorMessage = ''
-        this.errorType = ''
-    }
 
     @Mutation
     LOADING (v: boolean) {

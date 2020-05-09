@@ -12,13 +12,14 @@
           v-btn(to="/recover" x-large block ripple).my-3 Recover Wallet
 </template>
 <script lang="ts">
-import { defineComponent, computed } from '@vue/composition-api'
+import { defineComponent, ref } from '@vue/composition-api'
 import { useCreateUserMutation } from '~/types/ApiTypes'
 import { authStore } from '~/store'
 
 export default defineComponent({
   setup (_, { root }) {
     const { mutate: mutateCreate, loading, onDone } = useCreateUserMutation()
+    const errorMsg = ref('')
 
     onDone((res) => {
       console.log({ res })
@@ -26,16 +27,17 @@ export default defineComponent({
         authStore.CREATE_USER(res.data)
         if (res.data.createUser.__typename === 'NewUser') {
           root.$router.push('/credentials')
+        } else {
+          errorMsg.value = res.data.createUser.message
         }
       }
     })
 
-    const errorMsg = computed(() => authStore.errorMessage)
 
     return {
       loading,
       mutateCreate,
-      errorMsg,
+      errorMsg
     }
   }
 })

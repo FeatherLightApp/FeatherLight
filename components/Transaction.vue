@@ -21,7 +21,7 @@
                   template(v-slot:default)
                     tbody
                       template(v-for='(v, k) in item.table')
-                        tr(v-if='typeof(v) == "number" || !!v')
+                        tr(v-show='typeof(v) == "number" || !!v')
                           td {{k}}
                           copy-td(:text='v')
                       
@@ -111,7 +111,6 @@ export default defineComponent({
     const storeLoading = computed(() => walletStore.loading)
 
     onResult((res) => {
-      console.log({res})
       if (res && res.data) {
         walletStore.FEED(res.data)
       }

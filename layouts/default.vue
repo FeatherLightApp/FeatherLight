@@ -1,6 +1,5 @@
 <template lang="pug">
   v-app
-    error-snackbar
     v-app-bar(app)
       v-toolbar-title
         | Lumen Wallet
@@ -43,8 +42,7 @@ import { useLogoutMutation } from '~/types/ApiTypes'
 
 export default defineComponent({
   components: {
-    CoreFooter: () => import('~/components/core/Footer.vue'),
-    ErrorSnackbar: () => import('~/components/core/ErrorSnackbar.vue')
+    CoreFooter: () => import('~/components/core/Footer.vue')
   },
   setup (_, {root}) {
     const { mutate, onDone } = useLogoutMutation()

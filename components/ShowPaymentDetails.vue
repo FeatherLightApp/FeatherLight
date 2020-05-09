@@ -2,7 +2,7 @@
   v-simple-table
     tbody
       template(v-for='(v, k) in table')
-        tr(v-if='!!v && k != "__typename"' :key='k')
+        tr(v-show='!!v && k != "__typename"' :key='k')
           td {{k}}
           copy-td(:text='v') 
 </template>

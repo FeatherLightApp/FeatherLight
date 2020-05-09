@@ -24,24 +24,25 @@ export default defineComponent({
 
     const { mutate: mutateLogin, loading, onDone } = useLoginMutation()
 
-    // @ts-ignore
+
+    const errorMsg = ref('')
     onDone((res) => {
-      if (res && res.data) {
+      if (res && res.data && res.data.login.__typename == 'Error') {
+        errorMsg.value = res.data.login.message
+      } else if (res && res.data) {
         authStore.LOGIN(res.data)
         root.$router.push('/')
       }
     })
-
-    const field = ref('')
 
 
     function validate (val: string) {
       return val.length == 41 && username.value.length == 20 && !!password.value.length || 'Invalid recovery key'
     }
 
-    const isValid = ref(false)
 
-    const errorMsg = computed(() => authStore.errorMessage)
+    const isValid = ref(false)
+    const field = ref('')
 
     return {
       field,

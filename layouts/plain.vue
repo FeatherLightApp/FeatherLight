@@ -1,6 +1,5 @@
 <template lang="pug">
   v-app
-    error-snackbar
     v-content
       v-container
         v-row(justify='start' justify-lg='start' align='center')#align-row
@@ -12,8 +11,7 @@ import { defineComponent } from '@vue/composition-api'
 
 export default defineComponent({
   components: {
-    CoreFooter: () => import('~/components/core/Footer.vue'),
-    ErrorSnackbar: () => import('~/components/core/ErrorSnackbar.vue')
+    CoreFooter: () => import('~/components/core/Footer.vue')
   }
 })
 </script>
