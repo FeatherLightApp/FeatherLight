@@ -1,12 +1,14 @@
 <template lang="pug">
   v-container(fluid)
-    v-col.text-center
-      qrcode-vue(:value='code' size="200" background="#33333d" foreground='#1EB980')
-      v-tooltip(top)
-        template(v-slot:activator='{ on }')
-          div(@click='copy(code)' v-on='on').mt-3
-            | {{ code }}
-        span {{ isCopied ? 'Copied!' : 'Click to copy' }}
+    v-row(justify='center')
+      v-sheet(color='white')
+        qrcode-vue(:value='code' size="200" style='height: 200px;').ma-2
+      v-col(cols='12').text-center
+        v-tooltip(top)
+          template(v-slot:activator='{ on }')
+            div(@click='copy(code)' v-on='on').mt-3
+              | {{ code }}
+          span {{ isCopied ? 'Copied!' : 'Click to copy' }}
 
 
 </template>

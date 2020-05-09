@@ -9,9 +9,13 @@
           | {{ value }}
           span(v-if='walletStore.created').overline.white--text
             |&nbsp;{{ settingsStore.currency }}
-    v-tabs(v-model='tab' fixed-tabs)
-      v-tab(v-for='item in items' :key='item')
-        |{{ item }}
+    v-tabs(v-model='tab' fixed-tabs :icons-and-text='$vuetify.breakpoint.mdAndUp')
+      v-tab(v-for='item in items' :key='item.text')
+        span.hidden-xs-only {{ item.text }}
+        v-icon.mb-1.hidden-sm-only {{ item.icon }}
+    div.hidden-sm-and-up
+      v-divider(light)
+      div.mobile-header.text-center.my-3 {{computedComponent}}
     v-divider(light)
     v-expand-transition(mode='out-in')
       keep-alive
@@ -33,12 +37,17 @@ export default defineComponent({
     const { loading, onResult } = useMeQuery()
     const { value } = useCurrencyRounding()
 
+    const items = ref([
+      { text: 'send', icon: 'mdi-cash-minus' },
+      { text: 'transactions', icon: 'mdi-history' },
+      { text: 'receive', icon: 'mdi-cash-plus' }
+    ])
+
     const tab = computed({
       get: () => settingsStore.activeTab,
       set: (v: number) => settingsStore.TAB(v)
     })
-    
-    const items = ref(['send', 'transactions', 'receive'])
+
     onResult((res) => {
       if (res) {
         walletStore.ME(res.data)
@@ -48,7 +57,7 @@ export default defineComponent({
     const computedComponent = computed(() => {
       if (tab.value == 0) {
         return 'send'
-      } else if (tab.value == 1 && !loading.value) {
+      } else if (tab.value == 1) {
         return 'transactions'
       } else if (tab.value == 2) {
         return 'receive'
@@ -78,3 +87,11 @@ export default defineComponent({
   }
 })
 </script>
+<style lang="scss" scoped>
+.mobile-header {
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: 0.0892857143em;
+  text-transform: uppercase;
+}
+</style>
