@@ -4,7 +4,7 @@
       template(v-for='(v, k) in table')
         tr(v-show='!!v && k != "__typename"' :key='k')
           td {{k}}
-          copy-td(:text='v') 
+          copy-td(:text='`${v}`') 
 </template>
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api'

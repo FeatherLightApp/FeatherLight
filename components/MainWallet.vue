@@ -15,10 +15,10 @@
     v-divider(light)
     v-expand-transition(mode='out-in')
       keep-alive
-        component(:is='computedComponent')
+        component(:is='computedComponent' ref='activeElem')
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import { useMeQuery } from '~/types/ApiTypes'
 import { settingsStore, walletStore } from '~/store'
 import useCurrencyRounding from '~/composition/useCurrencyRounding'
@@ -51,6 +51,15 @@ export default defineComponent({
       }
     })
 
+    const activeElem = ref<HTMLElement>(null)
+
+    watch(activeElem => {
+      if (computedComponent.value == 'transactions') {
+        // @ts-ignore
+        activeElem.refetch()
+      }
+    })
+
     return {
       loading,
       tab,
@@ -58,7 +67,8 @@ export default defineComponent({
       settingsStore,
       walletStore,
       value,
-      computedComponent
+      computedComponent,
+      activeElem
     }
   }
 })

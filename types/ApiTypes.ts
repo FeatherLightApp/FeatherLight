@@ -13,15 +13,19 @@ export type Scalars = {
   B64: any;
 };
 
-export enum Action {
-  /**
-   * Allows user to attenuate macaroon to only add invoices
-   * this means user can give attenuated macaroon to others to add invoices on their behalf
-   */
-  AddInvoice = 'ADD_INVOICE',
-  /** Used to limit the scope of token to only refreshMacaroon */
-  Refresh = 'REFRESH'
-}
+export type AttenuatedMacaroon = {
+   __typename?: 'AttenuatedMacaroon';
+  caveats: Array<Caveat>;
+  macaroon: Scalars['String'];
+};
+
+export type AttenuatedMacaroonResponse = AttenuatedMacaroon | Error;
+
+export type AuthPayload = {
+   __typename?: 'AuthPayload';
+  access: Scalars['String'];
+  refresh: Scalars['String'];
+};
 
 
 export type BalanceResponse = NodeBalance | Error;
@@ -63,6 +67,16 @@ export type BaseUserFeedArgs = {
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
 };
+
+export enum Caveat {
+  /**
+   * Allows user to attenuate macaroon to only add invoices
+   * this means user can give attenuated macaroon to others to add invoices on their behalf
+   */
+  AddInvoice = 'ADD_INVOICE',
+  /** Used to limit the scope of token to only refreshMacaroon */
+  Refresh = 'REFRESH'
+}
 
 export type Channel = {
    __typename?: 'Channel';
@@ -196,6 +210,8 @@ export type Invoice = {
   memo: Scalars['String'];
 };
 
+export type MacaroonResponse = AuthPayload | Error;
+
 export type Mutation = {
    __typename?: 'Mutation';
   /** Creates a new user of type Role, rate limited mutation */
@@ -205,11 +221,13 @@ export type Mutation = {
    * and a limited refresh macaroon which expires in 7 days
    * Limited to 5 operations per day
    */
-  login: TokenResponse;
+  login: MacaroonResponse;
   /** Rotates the macaroon key for the user, causing all issued macaroons to be invalidated */
   logout?: Maybe<Error>;
   /** Issues new token payload: refresh token and full token */
-  refreshMacaroons: TokenResponse;
+  refreshMacaroons: MacaroonResponse;
+  /** Bake a macaroon with additional caveats to limit account access */
+  bakeMacaroon: AttenuatedMacaroonResponse;
   /**
    * Add an invoice for the user. If hash is specified then this creates a hold invoice
    * hold invoices must be resolved by calling resolveInvoice
@@ -226,7 +244,7 @@ export type Mutation = {
    */
   resolveInvoice: UserInvoiceResponse;
   /** Pay an invoice with a payment string, if this is a tip invoice then */
-  payInvoice: PayInvoiceResponse;
+  payInvoice: PaidInvoiceResponse;
   /** Temporary mutation for testing */
   forceUser: UserResponse;
 };
@@ -240,6 +258,11 @@ export type MutationCreateUserArgs = {
 export type MutationLoginArgs = {
   username: Scalars['String'];
   password: Scalars['String'];
+};
+
+
+export type MutationBakeMacaroonArgs = {
+  caveats: Array<Caveat>;
 };
 
 
@@ -273,7 +296,7 @@ export type NewUser = BaseUser & {
   /** Username is only ever returned once, upon user creation. It is the clients responsibility to store the username */
   username: Scalars['String'];
   /** Access token is a jwt which must be supplied in the header for authorized requests */
-  tokens: TokenPayload;
+  tokens: AuthPayload;
   balance: Scalars['Int'];
   btcAddress: Scalars['String'];
   invoices: Array<Maybe<UserInvoice>>;
@@ -339,10 +362,8 @@ export type PaidInvoice = Invoice & {
   memo: Scalars['String'];
 };
 
-export type PaidInvoiceResponse = UserInvoice | Error;
-
 /** Either error . or an invoice paid by this user (payee) */
-export type PayInvoiceResponse = PaidInvoice | Error;
+export type PaidInvoiceResponse = PaidInvoice | Error;
 
 export type PendingChannel = {
    __typename?: 'PendingChannel';
@@ -380,18 +401,11 @@ export type Query = {
   channels: ChannelResponse;
   decodeInvoice?: Maybe<DecodedInvoice>;
   info: InfoPayload;
-  genericRPC?: Maybe<Scalars['String']>;
 };
 
 
 export type QueryDecodeInvoiceArgs = {
   invoice: Scalars['String'];
-};
-
-
-export type QueryGenericRpcArgs = {
-  command: Scalars['String'];
-  params?: Maybe<Scalars['String']>;
 };
 
 /** Possible resolutions to resolve a hold invoice */
@@ -407,16 +421,8 @@ export enum Role {
 
 export type Subscription = {
    __typename?: 'Subscription';
-  invoice: PaidInvoiceResponse;
+  invoice: UserInvoiceResponse;
 };
-
-export type TokenPayload = {
-   __typename?: 'TokenPayload';
-  access: Scalars['String'];
-  refresh: Scalars['String'];
-};
-
-export type TokenResponse = TokenPayload | Error;
 
 export type User = BaseUser & {
    __typename?: 'User';
@@ -518,8 +524,8 @@ export type CreateUserMutation = (
     { __typename: 'NewUser' }
     & Pick<NewUser, 'username' | 'password'>
     & { tokens: (
-      { __typename?: 'TokenPayload' }
-      & Pick<TokenPayload, 'access' | 'refresh'>
+      { __typename?: 'AuthPayload' }
+      & Pick<AuthPayload, 'access' | 'refresh'>
     ) }
   ) | (
     { __typename: 'Error' }
@@ -536,8 +542,8 @@ export type LoginMutationVariables = {
 export type LoginMutation = (
   { __typename?: 'Mutation' }
   & { login: (
-    { __typename: 'TokenPayload' }
-    & Pick<TokenPayload, 'refresh' | 'access'>
+    { __typename: 'AuthPayload' }
+    & Pick<AuthPayload, 'refresh' | 'access'>
   ) | (
     { __typename: 'Error' }
     & Pick<Error, 'errorType' | 'message'>
@@ -561,8 +567,8 @@ export type RefreshMacaroonsMutationVariables = {};
 export type RefreshMacaroonsMutation = (
   { __typename?: 'Mutation' }
   & { refreshMacaroons: (
-    { __typename: 'TokenPayload' }
-    & Pick<TokenPayload, 'refresh' | 'access'>
+    { __typename: 'AuthPayload' }
+    & Pick<AuthPayload, 'refresh' | 'access'>
   ) | (
     { __typename: 'Error' }
     & Pick<Error, 'message' | 'errorType'>
@@ -727,7 +733,7 @@ export const LoginDocument = gql`
     mutation login($username: String!, $password: String!) {
   login(username: $username, password: $password) {
     __typename
-    ... on TokenPayload {
+    ... on AuthPayload {
       refresh
       access
     }
@@ -797,7 +803,7 @@ export const RefreshMacaroonsDocument = gql`
     mutation refreshMacaroons {
   refreshMacaroons {
     __typename
-    ... on TokenPayload {
+    ... on AuthPayload {
       refresh
       access
     }

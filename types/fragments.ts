@@ -102,10 +102,22 @@
       },
       {
         "kind": "UNION",
-        "name": "TokenResponse",
+        "name": "MacaroonResponse",
         "possibleTypes": [
           {
-            "name": "TokenPayload"
+            "name": "AuthPayload"
+          },
+          {
+            "name": "Error"
+          }
+        ]
+      },
+      {
+        "kind": "UNION",
+        "name": "AttenuatedMacaroonResponse",
+        "possibleTypes": [
+          {
+            "name": "AttenuatedMacaroon"
           },
           {
             "name": "Error"
@@ -126,22 +138,10 @@
       },
       {
         "kind": "UNION",
-        "name": "PayInvoiceResponse",
-        "possibleTypes": [
-          {
-            "name": "PaidInvoice"
-          },
-          {
-            "name": "Error"
-          }
-        ]
-      },
-      {
-        "kind": "UNION",
         "name": "PaidInvoiceResponse",
         "possibleTypes": [
           {
-            "name": "UserInvoice"
+            "name": "PaidInvoice"
           },
           {
             "name": "Error"

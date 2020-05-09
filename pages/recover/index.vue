@@ -1,18 +1,16 @@
 <template lang="pug">
   v-form(lazy-validation @submit.prevent="mutateLogin({username, password})" v-model="isValid")
     v-container
-      v-row
-        v-col(cols="12")
+      v-row(justify='center')
+        v-col(cols="12" md='10' lg='8')
           v-text-field(v-model="field" :rules="[validate]" outlined placeholder="Recovery Key" :error-messages="errorMsg")
-      v-row
-        v-col(cols="12")
-          v-row(justify="center")
+        v-col(cols="12" md='10' lg='8').text-center
             v-btn(type="submit" x-large block :disabled="!isValid")
               | Recover Wallet
 
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import { useLoginMutation } from '~/types/ApiTypes'
 import { authStore } from '~/store'
 
@@ -43,6 +41,8 @@ export default defineComponent({
 
     const isValid = ref(false)
     const field = ref('')
+
+    watch(field, () => errorMsg.value = '')
 
     return {
       field,

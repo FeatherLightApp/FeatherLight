@@ -13,7 +13,7 @@ const loadAuth: Middleware = async ({ $axios }: Context) => {
                 mutation refreshMacaroons {
                     refreshMacaroons {
                         __typename
-                        ... on TokenPayload {
+                        ... on AuthPayload {
                             access
                             refresh
                         }

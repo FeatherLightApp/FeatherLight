@@ -1,5 +1,5 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
-import { Role, useCreateUserMutation, CreateUserMutation, RefreshMacaroonsMutation, Error, LoginMutation, TokenPayload, LogoutMutation } from '~/types/ApiTypes'
+import { CreateUserMutation, RefreshMacaroonsMutation, LoginMutation, LogoutMutation } from '~/types/ApiTypes'
 
 @Module({
     name: 'auth',
@@ -22,7 +22,7 @@ export default class AuthModule extends VuexModule {
 
     @Mutation
     LOGIN ({ login }: LoginMutation) {
-        if (login.__typename === 'TokenPayload') {
+        if (login.__typename === 'AuthPayload') {
             this.access = login.access
         }
     }
@@ -38,7 +38,7 @@ export default class AuthModule extends VuexModule {
 
     @Mutation
     REFRESH_MACAROONS ({ refreshMacaroons }: RefreshMacaroonsMutation ) {
-        if (refreshMacaroons.__typename === 'TokenPayload') {
+        if (refreshMacaroons.__typename === 'AuthPayload') {
             this.access = refreshMacaroons.access
         }
     }

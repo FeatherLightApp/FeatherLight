@@ -23,7 +23,7 @@
                       template(v-for='(v, k) in item.table')
                         tr(v-show='typeof(v) == "number" || !!v')
                           td {{k}}
-                          copy-td(:text='v')
+                          copy-td(:text='`${v}`')
                       
 
 </template>
@@ -41,7 +41,7 @@ export default defineComponent({
     CopyTd: () => import('~/components/core/CopyTd.vue')
   },
   setup (_ , {root}) {
-    const { loading, onResult } = useFeedQuery({}, { pollInterval: 5000 })
+    const { loading, onResult, refetch } = useFeedQuery({}, { pollInterval: 10000 })
     const { multiplier, round } = useCurrencyRounding()
     const { epochToHuman } = useDateConversion()
     const { copy, isCopied } = useClipboard()
@@ -123,7 +123,8 @@ export default defineComponent({
       storeLoading,
       isCopied,
       copy,
-      loading
+      loading,
+      refetch
     }
   }
 })
