@@ -23,16 +23,27 @@
             :key='i'
             @click='settingsStore.changeCurrency(cur)'
           ) {{ cur }}
-      v-tooltip(bottom)
-        template(v-slot:activator='{ on }')
-          v-hover(v-slot:default='{ hover }')
-            v-icon(:color='hover ? "primary": ""' v-on='on' @click='mutate').mx-3 mdi-logout
-        | Logout
+      v-dialog(width='500')
+        template(v-slot:activator='{ on: dialog }')
+          v-tooltip(bottom)
+            template(v-slot:activator='{ on: tooltip }')
+              v-hover(v-slot:default='{ hover }')
+                v-icon(:color='hover ? "primary": ""' v-on='{...tooltip, ...dialog, ...hover}').mx-3#logout mdi-logout
+            | Logout
+        v-card
+          v-card-title Confirm Logout
+          v-card-text.
+            Once you logout you will need your recovery key to access this wallet.
+            Loging out of every device will invalidate any add-invoice links you have created.
+          v-card-actions
+            v-btn(@click='mutate({universal: false})') Logout of this device
+            v-btn(@click='mutate({universal: true})') Logout of all devices
     v-content
       v-container
         v-row(justify='center' align='start')
           nuxt
     core-footer
+
 </template>
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api'
@@ -63,9 +74,10 @@ export default defineComponent({
 
     // @ts-ignore
     onDone((res) => {
+      console.log({res})
       if (res && res.data) {
         authStore.LOGOUT(res.data)
-        root.$router.push('/')
+        location.reload()
       }
     })
 

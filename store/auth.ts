@@ -29,7 +29,9 @@ export default class AuthModule extends VuexModule {
 
     @Mutation
     LOGOUT({ logout }: LogoutMutation) {
+        console.log({logout})
         if (!logout) {
+            console.log('nullifying')
             this.access = ''
             this.username = ''
             this.password = ''

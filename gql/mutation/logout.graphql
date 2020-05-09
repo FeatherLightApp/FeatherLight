@@ -1,5 +1,5 @@
-mutation logout {
-    logout {
+mutation logout($universal: Boolean!) {
+    logout(universal: $universal) {
         __typename
         ... on Error {
             errorType

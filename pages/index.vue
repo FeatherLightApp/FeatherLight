@@ -16,7 +16,7 @@ export default defineComponent({
     MainWallet: () => import('~/components/MainWallet.vue'),
     Start: () => import('~/components/Start.vue')
   },
-  layout: () => {
+  layout: (context: Context) => {
     if (authStore.isAuthenticated) {
       return 'default'
     } else {

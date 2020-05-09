@@ -222,7 +222,7 @@ export type Mutation = {
    * Limited to 5 operations per day
    */
   login: MacaroonResponse;
-  /** Rotates the macaroon key for the user, causing all issued macaroons to be invalidated */
+  /** Nullifies the browsers cookie on response. If universal is true, rotate users macaroon secret, invalidation all sessions */
   logout?: Maybe<Error>;
   /** Issues new token payload: refresh token and full token */
   refreshMacaroons: MacaroonResponse;
@@ -258,6 +258,11 @@ export type MutationCreateUserArgs = {
 export type MutationLoginArgs = {
   username: Scalars['String'];
   password: Scalars['String'];
+};
+
+
+export type MutationLogoutArgs = {
+  universal?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -550,7 +555,9 @@ export type LoginMutation = (
   ) }
 );
 
-export type LogoutMutationVariables = {};
+export type LogoutMutationVariables = {
+  universal: Scalars['Boolean'];
+};
 
 
 export type LogoutMutation = (
@@ -768,8 +775,8 @@ export function useLoginMutation(baseOptions?: VueApolloComposable.UseMutationOp
           }
 export type LoginMutationCompositionFunctionResult = ReturnType<typeof useLoginMutation>;
 export const LogoutDocument = gql`
-    mutation logout {
-  logout {
+    mutation logout($universal: Boolean!) {
+  logout(universal: $universal) {
     __typename
     ... on Error {
       errorType
@@ -792,6 +799,7 @@ export const LogoutDocument = gql`
  * @example
  * const { mutate, loading, error, onDone } = useLogoutMutation({
  *   variables: {
+ *      universal: // value for 'universal'
  *   },
  * });
  */
