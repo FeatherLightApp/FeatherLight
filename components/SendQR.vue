@@ -36,8 +36,7 @@ export default defineComponent({
   },
   setup (_, {emit}) {
     // set loading animation while scanner support is determined
-    walletStore.LOADING(true)
-
+    const loading = ref(true)
 
     const mountScanner = ref(true)
     async function onInit(p: Promise<any>) {
@@ -46,7 +45,7 @@ export default defineComponent({
       } catch (error) {
         mountScanner.value = false
       } finally {
-        walletStore.LOADING(false)
+        loading.value = false
       }
     }
 
@@ -68,7 +67,8 @@ export default defineComponent({
       mountScanner,
       onInit,
       readCode,
-      onDecode
+      onDecode,
+      loading
     }
   }
 })

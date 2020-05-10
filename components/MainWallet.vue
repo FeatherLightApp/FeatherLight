@@ -1,6 +1,6 @@
 <template lang="pug">
   v-card
-    v-progress-linear(v-if='loading || walletStore.loading' stream buffer-value='0' color="quaternary" absolute top)
+    v-progress-linear(v-if='loading' stream buffer-value='0' color="quaternary" absolute top)
     v-container
       v-row(justify='center')
         v-col(cols='12').text-right.overline.py-0

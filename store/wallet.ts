@@ -28,6 +28,7 @@ export default class WalletModule extends VuexModule {
             this.balance = me.balance
             this.created = me.created
             this.btcAddress = me.btcAddress
+            this.feed = me.feed.filter(notEmpty)
         }
     }
 
@@ -54,11 +55,6 @@ export default class WalletModule extends VuexModule {
         }
     }
 
-
-    @Mutation
-    LOADING (v: boolean) {
-        this.loading = v
-    }
 
     get userInvoices (): UserInvoice[] {
         return this.feed.filter((i): i is UserInvoice => i.__typename == 'UserInvoice')

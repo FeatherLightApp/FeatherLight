@@ -1,0 +1,12 @@
+mutation bakeMacaroon {
+    bakeMacaroon(caveats: [ADD_INVOICE]) {
+        __typename
+        ... on Error {
+            errorType
+            message
+        }
+        ... on AttenuatedMacaroon {
+            macaroon
+        }
+    }
+}

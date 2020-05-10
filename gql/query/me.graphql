@@ -5,6 +5,44 @@ query me {
             balance
             created
             btcAddress
+            feed(paid:false limit:10 confirmations:0 expired:false) {
+                __typename
+                ... on UserInvoice {
+                    memo
+                    amount
+                    paymentRequest
+                    paid
+                    paidAt
+                    expiry
+                    timestamp
+                    paymentRequest
+                    paymentHash
+                    paymentPreimage
+                }
+                ... on PaidInvoice {
+                    amount
+                    fee
+                    paidAt
+                    expiry
+                    timestamp
+                    paymentRequest
+                    paymentHash
+                    paymentPreimage
+                    memo
+                }
+                ... on Deposit {
+                    address
+                    amount
+                    confirmations
+                    blockhash
+                    blockindex
+                    blocktime
+                    txid
+                    time
+                    timereceived
+                    comment
+                }
+            }
         }
         ... on Error {
             message

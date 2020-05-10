@@ -28,16 +28,9 @@
           v-tooltip(bottom)
             template(v-slot:activator='{ on: tooltip }')
               v-hover(v-slot:default='{ hover }')
-                v-icon(:color='hover ? "primary": ""' v-on='{...tooltip, ...dialog, ...hover}').mx-3#logout mdi-logout
-            | Logout
-        v-card
-          v-card-title Confirm Logout
-          v-card-text.
-            Once you logout you will need your recovery key to access this wallet.
-            Loging out of every device will invalidate any add-invoice links you have created.
-          v-card-actions
-            v-btn(@click='mutate({universal: false})') Logout of this device
-            v-btn(@click='mutate({universal: true})') Logout of all devices
+                v-icon(:color='hover ? "primary": ""' v-on='{...tooltip, ...dialog, ...hover}').mx-3#logout mdi-account-settings
+            | Settings
+        account-settings
     v-content
       v-container
         v-row(justify='center' align='start')
@@ -47,16 +40,15 @@
 </template>
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api'
-import { settingsStore, authStore } from '~/store'
+import { settingsStore } from '~/store'
 import { Currency } from '~/types/currency'
-import { useLogoutMutation } from '~/types/ApiTypes'
 
 export default defineComponent({
   components: {
-    CoreFooter: () => import('~/components/core/Footer.vue')
+    CoreFooter: () => import('~/components/core/Footer.vue'),
+    AccountSettings: () => import('~/components/AcountSettings.vue')
   },
   setup (_, {root}) {
-    const { mutate, onDone } = useLogoutMutation()
     const icon = computed(() => {
       switch(settingsStore.currency) {
         case Currency.sats:
@@ -72,19 +64,9 @@ export default defineComponent({
       }
     })
 
-    // @ts-ignore
-    onDone((res) => {
-      console.log({res})
-      if (res && res.data) {
-        authStore.LOGOUT(res.data)
-        location.reload()
-      }
-    })
-
     return {
       icon,
       settingsStore,
-      mutate
     }
   }
 })

@@ -518,6 +518,20 @@ export type AddInvoiceMutation = (
   ) }
 );
 
+export type BakeMacaroonMutationVariables = {};
+
+
+export type BakeMacaroonMutation = (
+  { __typename?: 'Mutation' }
+  & { bakeMacaroon: (
+    { __typename: 'AttenuatedMacaroon' }
+    & Pick<AttenuatedMacaroon, 'macaroon'>
+  ) | (
+    { __typename: 'Error' }
+    & Pick<Error, 'errorType' | 'message'>
+  ) }
+);
+
 export type CreateUserMutationVariables = {
   role?: Maybe<Role>;
 };
@@ -643,6 +657,16 @@ export type MeQuery = (
   & { me: (
     { __typename: 'User' }
     & Pick<User, 'balance' | 'created' | 'btcAddress'>
+    & { feed: Array<Maybe<(
+      { __typename: 'Deposit' }
+      & Pick<Deposit, 'address' | 'amount' | 'confirmations' | 'blockhash' | 'blockindex' | 'blocktime' | 'txid' | 'time' | 'timereceived' | 'comment'>
+    ) | (
+      { __typename: 'PaidInvoice' }
+      & Pick<PaidInvoice, 'amount' | 'fee' | 'paidAt' | 'expiry' | 'timestamp' | 'paymentRequest' | 'paymentHash' | 'paymentPreimage' | 'memo'>
+    ) | (
+      { __typename: 'UserInvoice' }
+      & Pick<UserInvoice, 'memo' | 'amount' | 'paymentRequest' | 'paid' | 'paidAt' | 'expiry' | 'timestamp' | 'paymentHash' | 'paymentPreimage'>
+    )>> }
   ) | (
     { __typename: 'Error' }
     & Pick<Error, 'message' | 'errorType'>
@@ -695,6 +719,41 @@ export function useAddInvoiceMutation(baseOptions?: VueApolloComposable.UseMutat
             return VueApolloComposable.useMutation<AddInvoiceMutation, AddInvoiceMutationVariables>(AddInvoiceDocument, baseOptions);
           }
 export type AddInvoiceMutationCompositionFunctionResult = ReturnType<typeof useAddInvoiceMutation>;
+export const BakeMacaroonDocument = gql`
+    mutation bakeMacaroon {
+  bakeMacaroon(caveats: [ADD_INVOICE]) {
+    __typename
+    ... on Error {
+      errorType
+      message
+    }
+    ... on AttenuatedMacaroon {
+      macaroon
+    }
+  }
+}
+    `;
+
+/**
+ * __useBakeMacaroonMutation__
+ *
+ * To run a mutation, you first call `useBakeMacaroonMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useBakeMacaroonMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useBakeMacaroonMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useBakeMacaroonMutation(baseOptions?: VueApolloComposable.UseMutationOptions<BakeMacaroonMutation, BakeMacaroonMutationVariables>) {
+            return VueApolloComposable.useMutation<BakeMacaroonMutation, BakeMacaroonMutationVariables>(BakeMacaroonDocument, baseOptions);
+          }
+export type BakeMacaroonMutationCompositionFunctionResult = ReturnType<typeof useBakeMacaroonMutation>;
 export const CreateUserDocument = gql`
     mutation createUser($role: Role) {
   createUser(role: $role) {
@@ -1004,6 +1063,44 @@ export const MeDocument = gql`
       balance
       created
       btcAddress
+      feed(paid: false, limit: 10, confirmations: 0, expired: false) {
+        __typename
+        ... on UserInvoice {
+          memo
+          amount
+          paymentRequest
+          paid
+          paidAt
+          expiry
+          timestamp
+          paymentRequest
+          paymentHash
+          paymentPreimage
+        }
+        ... on PaidInvoice {
+          amount
+          fee
+          paidAt
+          expiry
+          timestamp
+          paymentRequest
+          paymentHash
+          paymentPreimage
+          memo
+        }
+        ... on Deposit {
+          address
+          amount
+          confirmations
+          blockhash
+          blockindex
+          blocktime
+          txid
+          time
+          timereceived
+          comment
+        }
+      }
     }
     ... on Error {
       message
