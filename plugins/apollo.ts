@@ -17,7 +17,7 @@ const authLink = setContext(async (_, { headers }) => {
     return {
         headers: {
             ...headers,
-            Authorization: authStore.access || ''
+            Authorization: authStore.access || authStore.attenuated || ''
         }
     }
 })

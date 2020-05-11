@@ -1,0 +1,6 @@
+query checkMacaroon {
+    checkMacaroon(caveats: [ADD_INVOICE]) {
+        errorType
+        message
+    }
+}

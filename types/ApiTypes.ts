@@ -406,11 +406,18 @@ export type Query = {
   channels: ChannelResponse;
   decodeInvoice?: Maybe<DecodedInvoice>;
   info: InfoPayload;
+  /** Tests the macaroon sent in Authorization header against the array of caveats */
+  checkMacaroon?: Maybe<Error>;
 };
 
 
 export type QueryDecodeInvoiceArgs = {
   invoice: Scalars['String'];
+};
+
+
+export type QueryCheckMacaroonArgs = {
+  caveats?: Maybe<Array<Maybe<Caveat>>>;
 };
 
 /** Possible resolutions to resolve a hold invoice */
@@ -610,6 +617,17 @@ export type SendPaymentMutation = (
     { __typename: 'Error' }
     & Pick<Error, 'errorType' | 'message'>
   ) }
+);
+
+export type CheckMacaroonQueryVariables = {};
+
+
+export type CheckMacaroonQuery = (
+  { __typename?: 'Query' }
+  & { checkMacaroon?: Maybe<(
+    { __typename?: 'Error' }
+    & Pick<Error, 'errorType' | 'message'>
+  )> }
 );
 
 export type DecodeInvoiceQueryVariables = {
@@ -946,6 +964,35 @@ export function useSendPaymentMutation(baseOptions?: VueApolloComposable.UseMuta
             return VueApolloComposable.useMutation<SendPaymentMutation, SendPaymentMutationVariables>(SendPaymentDocument, baseOptions);
           }
 export type SendPaymentMutationCompositionFunctionResult = ReturnType<typeof useSendPaymentMutation>;
+export const CheckMacaroonDocument = gql`
+    query checkMacaroon {
+  checkMacaroon(caveats: [ADD_INVOICE]) {
+    errorType
+    message
+  }
+}
+    `;
+
+/**
+ * __useCheckMacaroonQuery__
+ *
+ * To run a query within a Vue component, call `useCheckMacaroonQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCheckMacaroonQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useCheckMacaroonQuery(
+ *   {
+ *   }
+ * );
+ */
+type ReactiveFunctionCheckMacaroonQuery = () => CheckMacaroonQueryVariables
+export function useCheckMacaroonQuery(variables?: CheckMacaroonQueryVariables | VueCompositionApi.Ref<CheckMacaroonQueryVariables> | ReactiveFunctionCheckMacaroonQuery, baseOptions?: VueApolloComposable.UseQueryOptions<CheckMacaroonQuery, CheckMacaroonQueryVariables>) {
+          return VueApolloComposable.useQuery<CheckMacaroonQuery, CheckMacaroonQueryVariables>(CheckMacaroonDocument, variables, baseOptions);
+        }
+export type CheckMacaroonQueryCompositionFunctionResult = ReturnType<typeof useCheckMacaroonQuery>;
 export const DecodeInvoiceDocument = gql`
     query DecodeInvoice($inv: String!) {
   decodeInvoice(invoice: $inv) {

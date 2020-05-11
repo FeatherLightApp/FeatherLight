@@ -10,6 +10,7 @@ export default class AuthModule extends VuexModule {
     access = ''
     username = ''
     password = ''
+    attenuated = ''
 
     @Mutation
     CREATE_USER ({ createUser }: CreateUserMutation) {
@@ -43,6 +44,11 @@ export default class AuthModule extends VuexModule {
         if (refreshMacaroons.__typename === 'AuthPayload') {
             this.access = refreshMacaroons.access
         }
+    }
+
+    @Mutation
+    ATTENUATED (v: string) {
+        this.attenuated = v
     }
 
     get isAuthenticated () {

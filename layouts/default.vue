@@ -23,7 +23,7 @@
             :key='i'
             @click='settingsStore.changeCurrency(cur)'
           ) {{ cur }}
-      v-dialog(width='500')
+      v-dialog(v-if='showAccount' width='500')
         template(v-slot:activator='{ on: dialog }')
           v-tooltip(bottom)
             template(v-slot:activator='{ on: tooltip }')
@@ -63,10 +63,12 @@ export default defineComponent({
           return 'mdi-currency-usd'
       }
     })
+    const showAccount = computed(() => root.$nuxt.$route.name != 'addinvoice-macaroon')
 
     return {
       icon,
       settingsStore,
+      showAccount
     }
   }
 })

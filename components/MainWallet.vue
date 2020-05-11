@@ -4,7 +4,7 @@
     v-container
       v-row(justify='center')
         v-col(cols='12').text-right.overline.py-0
-          | Created: {{ walletStore.created }} 
+          | Created: {{ epochToHuman(walletStore.created) }} 
         v-col(cols='12').text-center.primary--text.display-3
           | {{ value }}
           span(v-if='walletStore.created').overline.white--text
@@ -26,6 +26,7 @@ import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import { useMeQuery } from '~/types/ApiTypes'
 import { settingsStore, walletStore } from '~/store'
 import useCurrencyRounding from '~/composition/useCurrencyRounding'
+import useDateConversion from '~/composition/useDateConversion'
 
 export default defineComponent({
   components: {
@@ -36,6 +37,7 @@ export default defineComponent({
   setup () {
     const { loading, onResult } = useMeQuery()
     const { value } = useCurrencyRounding()
+    const { epochToHuman } = useDateConversion()
 
     const items = ref([
       { text: 'send', icon: 'mdi-cash-minus' },
@@ -82,7 +84,8 @@ export default defineComponent({
       walletStore,
       value,
       computedComponent,
-      activeElem
+      activeElem,
+      epochToHuman
     }
   }
 })
