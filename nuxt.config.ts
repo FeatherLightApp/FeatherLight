@@ -4,7 +4,7 @@ import { Configuration } from '@nuxt/types'
 export default {
   mode: 'spa',
   env: {
-    endpoint: 'https://dev.seanaye.ca/graphql/'
+    endpoint: 'https://api.featherlight.app/graphql/'
   },
   server: {
     port: 3000,
@@ -28,7 +28,12 @@ export default {
   /*
   ** Customize the progress-bar color
   */
-  loading: { color: '#fff' },
+  loading: { color: '#33333d' },
+  loadingIndicator: {
+    name: 'cube-grid',
+    color: '#1EB980',
+    background: '#33333d'
+  },
   /*
   ** Global CSS
   */

@@ -1,4 +1,4 @@
-# lumenwallet
+# FeatherLight
 
 > My scrumtrulescent Nuxt.js project
 

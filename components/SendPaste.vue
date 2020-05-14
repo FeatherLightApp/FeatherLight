@@ -5,14 +5,15 @@
         v-text-field(v-model='payReq' outlined placeholder='Paste Payment Request')
 </template>
 <script lang="ts">
-import { defineComponent, ref, watch } from '@vue/composition-api'
+import { defineComponent, computed } from '@vue/composition-api'
+import { walletStore } from '../store'
 
 export default defineComponent({
-  setup (_, {emit}) {
-    const payReq = ref('')
+  setup () {
 
-    watch(payReq, () => {
-      emit('payReq', payReq.value)
+    const payReq = computed({
+      get: () => walletStore.paymentReq,
+      set: (v: string) => walletStore.PAYMENT_REQ(v)
     })
     
     return {

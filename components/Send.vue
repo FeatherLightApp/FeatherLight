@@ -9,7 +9,7 @@
 
     v-expand-transition(mode='out-in')
       keep-alive
-        component(:is='computedComponent' @payReq='decodeInvoice')
+        component(:is='computedComponent')
     div(v-if='result && !result.decodeInvoice').tertiary--text.text-center Invalid Payment Request
     v-expand-transition(mode='out-in')
       div(v-if='result && result.decodeInvoice')
@@ -32,7 +32,14 @@ export default defineComponent({
     ShowPaymentDetails: () => import('~/components/ShowPaymentDetails.vue')
   },
   setup () {
-    const payReq = ref('')
+    const payReq = computed({
+      get: () => walletStore.paymentReq,
+      set: (v: string) => {
+        walletStore.PAYMENT_REQ(v)
+        paymentError.value = ''
+      }
+    })
+
     const paymentError = ref('')
 
     const variables = computed(() => ({
@@ -48,17 +55,13 @@ export default defineComponent({
     onDone(res => {
       if (!!res && res.data) {
         walletStore.ADD_PAID_INVOICE(res.data)
+        settingsStore.TAB(1)
+        payReq.value = ''
       }
       if (!!res && res.data && res.data.payInvoice.__typename == 'Error') {
          paymentError.value = res.data.payInvoice.message
       }
     })
-
-    function decodeInvoice (code: string) {
-      console.log({code})
-      payReq.value = code
-      paymentError.value = ''
-    }
 
     const computedComponent = computed(() => (method.value == 0) ? 'send-qr' : 'send-paste')
     const method = ref(0)
@@ -67,7 +70,6 @@ export default defineComponent({
     return {
       method,
       computedComponent,
-      decodeInvoice,
       result,
       loading,
       payReq,

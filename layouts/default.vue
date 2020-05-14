@@ -1,8 +1,8 @@
 <template lang="pug">
   v-app
     v-app-bar(app)
-      v-toolbar-title
-        | Lumen Wallet
+      v-toolbar-title.font-weight-light
+        | FeatherLight
       v-spacer
       v-menu(bottom fixed)
         template(v-slot:activator='{ on:menu }')

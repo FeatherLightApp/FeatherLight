@@ -21,6 +21,7 @@ export default class WalletModule extends VuexModule {
     btcAddress = ''
     feed: Array<UserInvoice | PaidInvoice | Deposit> = []
     loading = false
+    paymentReq = ''
 
     @Mutation
     ME({ me }: MeQuery) {
@@ -53,6 +54,11 @@ export default class WalletModule extends VuexModule {
             this.feed = me.feed.filter(notEmpty)
             this.balance = me.balance
         }
+    }
+
+    @Mutation
+    PAYMENT_REQ(v: string) {
+        this.paymentReq = v
     }
 
 
