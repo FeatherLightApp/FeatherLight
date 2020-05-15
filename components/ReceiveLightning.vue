@@ -2,8 +2,10 @@
   v-expand-transition
     v-form(
       v-if='!payReq'
+      ref='form'
       v-model='valid'
-      @submit.prevent='mutate({amt: translate(amt), memo})'
+      lazy-validation
+      @submit.prevent='form.validate() ? mutate({amt: translate(amt), memo}) : null'
     )
       v-row(justify='center')
         v-col(cols='12')
@@ -16,7 +18,6 @@
             reverse
             :rules="[validAmt, required]"
             :prefix="settingsStore.currency"
-            required
           )
         v-col(cols='12')
           v-text-field(
@@ -25,9 +26,7 @@
             filled
             counter='1024'
             label='Memo'
-            placeholder='Transaction description'
             :rules='[required, char1024]'
-            required
           )
         v-col(cols='12').text-right
           v-btn(
@@ -52,6 +51,7 @@ export default defineComponent({
   setup () {
     const amt = ref('')
     const memo = ref('')
+    const form = ref(null)
     const { required, validAmt, valid, char1024 } = useValidation()
     const { translate } = useCurrencyRounding()
 
@@ -96,7 +96,8 @@ export default defineComponent({
       submitting,
       mutate,
       translate,
-      payReq
+      payReq,
+      form
     }
 
   }

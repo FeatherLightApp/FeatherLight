@@ -3,7 +3,7 @@
     v-container
       v-row(justify='center')
         v-col(cols="12" md='10' lg='8')
-          v-text-field(v-model="field" :rules="[validate]" outlined placeholder="Recovery Key" :error-messages="errorMsg")
+          v-text-field(v-model="field" :rules="[validate]" outlined label="Recovery Key" :error-messages="errorMsg")
         v-col(cols="12" md='10' lg='8').text-center
             v-btn(type="submit" x-large block :disabled="!isValid")
               | Recover Wallet

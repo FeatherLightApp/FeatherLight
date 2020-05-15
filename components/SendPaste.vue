@@ -2,7 +2,7 @@
   v-container.pb-0
     v-row
       v-col(cols='12').pb-0
-        v-text-field(v-model='payReq' outlined placeholder='Paste Payment Request')
+        v-text-field(v-model='payReq' outlined label='Paste Payment Request')
 </template>
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api'

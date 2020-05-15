@@ -2,9 +2,9 @@
   v-container
     v-progress-linear(v-if='loading' stream buffer-value='0' color="quaternary" absolute top)
     v-tabs(v-model='method' centered)
-      v-tab
+      v-tab(@click='vibrate(200)')
         | QR Code
-      v-tab
+      v-tab(@click='vibrate(200)')
         | Paste
 
     v-expand-transition(mode='out-in')
@@ -22,6 +22,7 @@ import { defineComponent, ref, computed, watchEffect } from '@vue/composition-ap
 import  useValidation from '~/composition/useValidation'
 import { settingsStore, walletStore } from '~/store'
 import { useAddInvoiceMutation, useDecodeInvoiceQuery, useSendPaymentMutation } from '~/types/ApiTypes'
+import useVibrate from '~/composition/useVibrate'
 
 
 export default defineComponent({
@@ -66,6 +67,7 @@ export default defineComponent({
     const computedComponent = computed(() => (method.value == 0) ? 'send-qr' : 'send-paste')
     const method = ref(0)
     
+    const { vibrate } = useVibrate()
 
     return {
       method,
@@ -75,7 +77,8 @@ export default defineComponent({
       payReq,
       sending,
       mutate,
-      paymentError
+      paymentError,
+      vibrate
     }
   }
 })

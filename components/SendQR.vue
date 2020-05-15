@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-container.py-0
+  v-container(v-intersect='onIntersect').py-0
     v-row
       v-col(cols='12').py-0
         v-fade-transition(mode='out-in')
@@ -12,7 +12,7 @@
                 v-file-input(@change='readCode' type='file' name='image' accept='image/*' capture='environment' outlined label='Upload QR Code')
 </template>
 <script lang="ts">
-import { defineComponent, ref, watch } from '@vue/composition-api'
+import { defineComponent, ref, watch, computed } from '@vue/composition-api'
 import { walletStore } from '~/store'
 import { processFile } from 'vue-qrcode-reader'
 
@@ -35,6 +35,7 @@ export default defineComponent({
 
     const mountScanner = ref(true)
     async function onInit(p: Promise<any>) {
+      console.log('scanner init')
       try {
         await p
       } catch (error) {
@@ -58,12 +59,17 @@ export default defineComponent({
       walletStore.PAYMENT_REQ(decoded)
     }
 
+    function onIntersect (entries: any, observer: any) {
+      mountScanner.value = entries[0].isIntersecting
+    } 
+
     return {
       mountScanner,
       onInit,
       readCode,
       onDecode,
-      loading
+      loading,
+      onIntersect
     }
   }
 })

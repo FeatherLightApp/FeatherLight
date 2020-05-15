@@ -10,7 +10,7 @@
           span(v-if='walletStore.created').overline.white--text
             |&nbsp;{{ settingsStore.currency }}
     v-tabs(v-model='tab' fixed-tabs :icons-and-text='$vuetify.breakpoint.mdAndUp')
-      v-tab(v-for='item in items' :key='item.text')
+      v-tab(v-for='item in items' :key='item.text' @click='vibrate(200)')
         span.hidden-xs-only {{ item.text }}
         v-icon.mb-1.hidden-sm-only {{ item.icon }}
     div.hidden-sm-and-up
@@ -27,6 +27,7 @@ import { useMeQuery } from '~/types/ApiTypes'
 import { settingsStore, walletStore } from '~/store'
 import useCurrencyRounding from '~/composition/useCurrencyRounding'
 import useDateConversion from '~/composition/useDateConversion'
+import useVibrate from '~/composition/useVibrate'
 
 export default defineComponent({
   components: {
@@ -76,6 +77,8 @@ export default defineComponent({
       }
     })
 
+    const { vibrate } = useVibrate()
+
     return {
       loading,
       tab,
@@ -85,7 +88,8 @@ export default defineComponent({
       value,
       computedComponent,
       activeElem,
-      epochToHuman
+      epochToHuman,
+      vibrate
     }
   }
 })
