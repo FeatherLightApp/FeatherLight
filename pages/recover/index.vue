@@ -1,7 +1,8 @@
 <template lang="pug">
   v-form(lazy-validation @submit.prevent="mutateLogin({username, password})" v-model="isValid")
     v-container
-      v-row(justify='center')
+      v-row(justify='center' align='center')
+        v-container(fluid)
         v-col(cols="12" md='10' lg='8')
           v-text-field(v-model="field" :rules="[validate]" outlined label="Recovery Key" :error-messages="errorMsg")
         v-col(cols="12" md='10' lg='8').text-center

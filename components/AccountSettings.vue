@@ -16,8 +16,8 @@
       Once you logout you will need your recovery key to access this wallet.
       Loging out of every device will invalidate any add-invoice links you have created.
     v-card-actions.px-6
-      v-btn(@click='mutate({universal: false})') Logout of this device
-      v-btn(@click='mutate({universal: true})') Logout of all devices
+      v-btn(@click='logout({universal: false})') Logout of this device
+      v-btn(@click='logout({universal: true})') Logout of all devices
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed } from '@vue/composition-api'

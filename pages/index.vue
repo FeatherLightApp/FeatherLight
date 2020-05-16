@@ -1,9 +1,6 @@
 <template lang="pug">
-  v-container
-    v-row(justify="center")
-      v-col(cols="12" md='10' lg='8')
-        v-fade-transition
-          component(:is='authenticated ? "main-wallet" : "start"')
+  v-fade-transition
+    component(:is='authenticated ? "main-wallet" : "start"')
 </template>
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api'

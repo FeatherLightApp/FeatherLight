@@ -32,7 +32,7 @@
             | Settings
         account-settings
     v-content
-      v-container
+      v-container(fluid)
         v-row(justify='center' align='start')
           nuxt
     core-footer
@@ -46,7 +46,7 @@ import { Currency } from '~/types/currency'
 export default defineComponent({
   components: {
     CoreFooter: () => import('~/components/core/Footer.vue'),
-    AccountSettings: () => import('~/components/AcountSettings.vue')
+    AccountSettings: () => import('~/components/AccountSettings.vue')
   },
   setup (_, {root}) {
     const icon = computed(() => {

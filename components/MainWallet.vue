@@ -1,25 +1,29 @@
 <template lang="pug">
-  v-card
-    v-progress-linear(v-if='loading' stream buffer-value='0' color="quaternary" absolute top)
-    v-container
-      v-row(justify='center')
-        v-col(cols='12').text-right.overline.py-0
-          | Created: {{ epochToHuman(walletStore.created) }} 
-        v-col(cols='12').text-center.primary--text.display-3
-          | {{ value }}
-          span(v-if='walletStore.created').overline.white--text
-            |&nbsp;{{ settingsStore.currency }}
-    v-tabs(v-model='tab' fixed-tabs :icons-and-text='$vuetify.breakpoint.mdAndUp')
-      v-tab(v-for='item in items' :key='item.text' @click='vibrate(200)')
-        span.hidden-xs-only {{ item.text }}
-        v-icon.mb-1.hidden-sm-only {{ item.icon }}
-    div.hidden-sm-and-up
-      v-divider(light)
-      div.mobile-header.text-center.my-3 {{computedComponent}}
-    v-divider(light)
-    v-expand-transition(mode='out-in')
-      keep-alive
-        component(:is='computedComponent' ref='activeElem')
+  v-container(fluid)
+    v-row(justify="center")
+      v-col(cols="11" lg='9' xl='7')
+        v-container.px-0
+          v-card
+            v-progress-linear(v-if='loading' stream buffer-value='0' color="quaternary" absolute top)
+            v-container
+              v-row(justify='center')
+                v-col(cols='12').text-right.overline.py-0
+                  | Created: {{ epochToHuman(walletStore.created) }} 
+                v-col(cols='12' style='font-family: "Eczar", sans-serif !important;').text-center.primary--text.display-3
+                  | {{ value }}
+                  span(v-if='walletStore.created').overline.white--text
+                    |&nbsp;{{ settingsStore.currency }}
+            v-tabs(v-model='tab' fixed-tabs :icons-and-text='$vuetify.breakpoint.mdAndUp')
+              v-tab(v-for='item in items' :key='item.text' @click='vibrate(200)')
+                span.hidden-xs-only {{ item.text }}
+                v-icon.mb-1.hidden-sm-only {{ item.icon }}
+            div.hidden-sm-and-up
+              v-divider(light)
+              div.mobile-header.text-center.my-3 {{computedComponent}}
+            v-divider(light)
+            v-expand-transition(mode='out-in')
+              keep-alive
+                component(:is='computedComponent' ref='activeElem')
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref, watch } from '@vue/composition-api'

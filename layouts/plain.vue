@@ -1,9 +1,11 @@
 <template lang="pug">
   v-app
+    v-app-bar(app)
+      v-toolbar-title.font-weight-thin FeatherLight
     v-content
-      v-container
-        v-row(justify='start' justify-lg='start' align='center')#align-row
-          nuxt
+        v-container(style='height: 100%;' fluid)
+          v-row(style='height: 100%' align='center')
+            nuxt
     core-footer
 </template>
 <script lang="ts">
@@ -15,8 +17,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss" scoped>
-#align-row {
-  height: calc(100vh - 20px);
-}
-</style>
