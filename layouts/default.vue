@@ -23,7 +23,7 @@
             :key='i'
             @click='settingsStore.changeCurrency(cur)'
           ) {{ cur }}
-      v-dialog(v-if='showAccount' width='500')
+      v-dialog(v-if='showAccount' max-width='800')
         template(v-slot:activator='{ on: dialog }')
           v-tooltip(bottom)
             template(v-slot:activator='{ on: tooltip }')
