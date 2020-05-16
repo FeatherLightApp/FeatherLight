@@ -5,7 +5,7 @@
         v-btn(text @click='$router.push("/")').font-weight-thin.btn-override.v-toolbar__title FeatherLight
     v-content
         v-container(style='height: 100%;' fluid)
-          v-row(style='height: 100%' align='center')
+          v-row(style='height: 100%' align='center' justify='center')
             nuxt
     core-footer
 </template>
