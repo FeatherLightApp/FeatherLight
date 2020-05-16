@@ -1,7 +1,8 @@
 <template lang="pug">
   v-app
     v-app-bar(app)
-      v-toolbar-title.font-weight-thin FeatherLight
+      v-toolbar-title
+        v-btn(text @click='$router.push("/")').font-weight-thin.btn-override.v-toolbar__title FeatherLight
     v-content
         v-container(style='height: 100%;' fluid)
           v-row(style='height: 100%' align='center')

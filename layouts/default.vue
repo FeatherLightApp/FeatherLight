@@ -1,8 +1,9 @@
 <template lang="pug">
   v-app
     v-app-bar(app)
-      v-toolbar-title.font-weight-light
-        | FeatherLight
+      v-toolbar-title
+        v-btn(text @click='$router.push("/")').font-weight-light.btn-override.v-toolbar__title
+          | FeatherLight
       v-spacer
       v-menu(bottom fixed)
         template(v-slot:activator='{ on:menu }')

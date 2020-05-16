@@ -8,3 +8,18 @@
 html {
   transition: all .5s;
 }
+
+.btn-override {
+  text-transform: none !important;
+  letter-spacing: inherit !important;
+}
+
+button.v-toolbar__title {
+  span.v-btn__content {
+    font-size: 1.25rem;
+    line-height: 1.5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
