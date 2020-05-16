@@ -9,7 +9,7 @@
                 v-btn(icon href='https://github.com/seanaye/FeatherLight' target='_blank' )
                   v-icon mdi-github
               v-col(cols='auto')
-                v-btn(text @click='$router.push("/about")').font-weight-light.px-0#btn-override About FeatherLight
+                v-btn(text @click='$router.push("/about")').font-weight-light.px-2#btn-override About FeatherLight
 </template>
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
