@@ -13,7 +13,7 @@
         v-btn(block x-large ripple to='/') I have written down my recovery key
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref, onMounted } from '@vue/composition-api'
 import { authStore } from '~/store'
 import useClipboard from '~/composition/useClipboard'
 
@@ -24,6 +24,9 @@ export default defineComponent({
     const recoveryKey = computed(() => `${authStore.username}:${authStore.password}`)
     const { isCopied, copy } = useClipboard()
 
+    console.log('created')
+
+    onMounted(() => console.log('mounted'))
     return {
       recoveryKey,
       isCopied,

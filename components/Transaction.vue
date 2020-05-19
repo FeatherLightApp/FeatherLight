@@ -3,7 +3,7 @@
     v-row
       v-col.px-0
         v-expand-transition(mode='out-in')
-          v-expansion-panels(v-if='!storeLoading' flat multiple focusable accordion)
+          v-expansion-panels(v-if='!storeLoading && feed.length > 0' flat multiple focusable accordion)
             v-expansion-panel(v-for='item in feed' :key='item.key' hover)
               v-expansion-panel-header
                 v-container(:class='[`${item.color}--text`]').py-0.title.font-weight-light
@@ -23,7 +23,7 @@
                         tr(v-show='typeof(v) == "number" || !!v')
                           td {{k}}
                           copy-td(:text='`${v}`')
-                      
+          div(v-if='!storeLoading && feed.length == 0').text-center Transactions you make will appear here            
 
 </template>
 <script lang="ts">
