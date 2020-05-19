@@ -29,9 +29,7 @@ export default defineComponent({
       if (res && res.data) {
         authStore.CREATE_USER(res.data)
         if (res.data.createUser.__typename === 'NewUser') {
-          root.$nextTick(()=>{
-            root.$router.push('/credentials/')
-          })
+          root.$router.push('/credentials/')
         } else {
           errorMsg.value = res.data.createUser.message
         }

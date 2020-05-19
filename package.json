@@ -1,7 +1,7 @@
 {
-  "name": "FeatherLightApp",
+  "name": "feather-light",
   "version": "1.0.0",
-  "description": "My scrumtrulescent Nuxt.js project",
+  "description": "Custodial Lightning Wallet in the Browser",
   "author": "Sean Aye",
   "private": true,
   "scripts": {

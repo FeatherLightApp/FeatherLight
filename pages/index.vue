@@ -3,7 +3,7 @@
     component(:is='authenticated ? "main-wallet" : "start"')
 </template>
 <script lang="ts">
-import { defineComponent, computed } from '@vue/composition-api'
+import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import { authStore } from '~/store'
 import { Context } from '@nuxt/types'
 
@@ -20,8 +20,14 @@ export default defineComponent({
       return 'plain'
     }
   },
-  setup () {
-    const authenticated = computed(() => authStore.isAuthenticated)
+  setup (_, {root}) {
+    const comp = computed(() => authStore.isAuthenticated)
+    const val = comp.value
+    const authenticated = ref(val)
+    // watcher with timeout avoids two components changing at once which causes bug
+    watch(comp, () => {
+      setTimeout(()=> authenticated.value = comp.value, 100)
+    })
 
     return {
       authenticated
