@@ -8,9 +8,9 @@
               | {{recoveryKey}}
           | {{ isCopied ? 'Copied to clipboard!' : 'Click to copy'}}
       v-col(cols='12').text-center
-        | Write this down in a safe place. You will need it to recover your wallet
+        | Write this down in a safe place immediately. You will need it to recover your wallet. This is the only time the information can be displayed.
       v-col(cols='12')
-        v-btn(block x-large ripple to='/') I have written down my recovery key
+        v-btn(block x-large ripple to='/') Continue
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref, onMounted } from '@vue/composition-api'
