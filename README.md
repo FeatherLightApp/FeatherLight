@@ -1,6 +1,6 @@
 # FeatherLight
 
-> My scrumtrulescent Nuxt.js project
+> FeatherLight is a work in progress web app that allows anyone to instantly create cusotdial lightning wallets in the browser by leveraging the FeatherLight api.
 
 ## Build Setup
 
