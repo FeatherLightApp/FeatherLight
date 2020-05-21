@@ -11,6 +11,7 @@ export default class AuthModule extends VuexModule {
     username = ''
     password = ''
     attenuated = ''
+    confirmRecovery = false
 
     @Mutation
     CREATE_USER ({ createUser }: CreateUserMutation) {
@@ -18,7 +19,13 @@ export default class AuthModule extends VuexModule {
             this.access = createUser.tokens.access
             this.username = createUser.username
             this.password = createUser.password
+            this.confirmRecovery = true
         }
+    }
+
+    @Mutation
+    DONE_CONFIRM () {
+        this.confirmRecovery = false
     }
 
     @Mutation

@@ -1,6 +1,6 @@
 <template lang="pug">
   v-fade-transition
-    component(:is='authenticated ? "main-wallet" : "start"')
+    component(:is='component')
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref, watch } from '@vue/composition-api'
@@ -20,17 +20,18 @@ export default defineComponent({
       return 'plain'
     }
   },
-  setup (_, {root}) {
-    const comp = computed(() => authStore.isAuthenticated)
-    const val = comp.value
-    const authenticated = ref(val)
-    // watcher with timeout avoids two components changing at once which causes bug
-    watch(comp, () => {
-      setTimeout(()=> authenticated.value = comp.value, 100)
+  setup () {
+    const component = computed(() => {
+      if (authStore.isAuthenticated && !authStore.confirmRecovery) {
+        return 'main-wallet'
+      } else {
+        return 'start'
+      }
     })
 
+
     return {
-      authenticated
+      component
     }
   }
 })
