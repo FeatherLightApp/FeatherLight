@@ -24,14 +24,15 @@
             :key='i'
             @click='settingsStore.changeCurrency(cur)'
           ) {{ cur }}
-      v-dialog(v-if='showAccount' max-width='800')
+      template(v-if='showAccount')
+      v-dialog(v-for='item in toolbarItems' :key='item.icon' max-width='800')
         template(v-slot:activator='{ on: dialog }')
           v-tooltip(bottom)
             template(v-slot:activator='{ on: tooltip }')
               v-hover(v-slot:default='{ hover }')
-                v-icon(:color='hover ? "primary": ""' v-on='{...tooltip, ...dialog, ...hover}').mx-3#logout mdi-account-settings
-            | Settings
-        account-settings
+                v-icon(:color='hover ? "primary": ""' v-on='{...tooltip, ...dialog, ...hover}').mx-3 {{item.icon}}
+            | {{ item.tooltip }}
+        component(:is='item.dialog')
     v-content
       v-container(fluid)
         v-row(justify='center' align='start')
@@ -40,14 +41,15 @@
 
 </template>
 <script lang="ts">
-import { defineComponent, computed } from '@vue/composition-api'
+import { defineComponent, computed, reactive } from '@vue/composition-api'
 import { settingsStore } from '~/store'
 import { Currency } from '~/types/currency'
 
 export default defineComponent({
   components: {
     CoreFooter: () => import('~/components/core/Footer.vue'),
-    AccountSettings: () => import('~/components/AccountSettings.vue')
+    AccountSettings: () => import('~/components/AccountSettings.vue'),
+    Gift: () => import('~/components/Gift.vue')
   },
   setup (_, {root}) {
     const icon = computed(() => {
@@ -66,10 +68,17 @@ export default defineComponent({
     })
     const showAccount = computed(() => root.$nuxt.$route.name != 'addinvoice-macaroon')
 
+    const toolbarItems = reactive([
+      {tooltip: 'Access Link', icon: 'mdi-link', dialog: 'account-settings'},
+      {tooltip: 'Gift', icon: 'mdi-gift-outline', dialog: 'gift'},
+      {tooltip: 'Logout', icon: 'mdi-logout', dialog: 'account-settings'}
+    ])
+
     return {
       icon,
       settingsStore,
-      showAccount
+      showAccount,
+      toolbarItems
     }
   }
 })

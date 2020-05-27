@@ -6,9 +6,12 @@ import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemo
 import { createHttpLink } from 'apollo-link-http'
 import { setContext } from 'apollo-link-context'
 import introspectionQueryResultData from '~/types/fragments'
+import useEndpoint from '~/composition/useEndpoint'
+
+const { getEndpoint } = useEndpoint()
 
 const link = createHttpLink({
-    uri: process.env.endpoint,
+    uri: getEndpoint(),
     credentials: 'include'
 })
 

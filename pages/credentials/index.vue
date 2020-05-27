@@ -18,6 +18,7 @@ import { authStore } from '~/store'
 import useClipboard from '~/composition/useClipboard'
 
 export default defineComponent({
+  // loading auth unesscary since this route is only possible when auth has been loaded previously
   middleware: ['assertAuthed', 'assertNewUser'],
   layout: 'plain',
   setup (_, {root}) {

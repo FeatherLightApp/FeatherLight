@@ -19,18 +19,22 @@ export default class WalletModule extends VuexModule {
     balance = 0
     created = 0
     btcAddress = ''
+    network = ''
+    version = ''
     feed: Array<UserInvoice | PaidInvoice | Deposit> = []
     loading = false
     paymentReq = ''
 
     @Mutation
-    ME({ me }: MeQuery) {
+    ME({ me, network, version }: MeQuery) {
         if (me.__typename == 'User') {
             this.balance = me.balance
             this.created = me.created
             this.btcAddress = me.btcAddress
             this.feed = me.feed.filter(notEmpty)
         }
+        this.network = network
+        this.version = version
     }
 
 

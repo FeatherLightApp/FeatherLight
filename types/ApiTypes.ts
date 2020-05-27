@@ -294,6 +294,11 @@ export type MutationForceUserArgs = {
   user: Scalars['String'];
 };
 
+export enum Network {
+  Testnet = 'TESTNET',
+  Mainnet = 'MAINNET'
+}
+
 export type NewUser = BaseUser & {
    __typename?: 'NewUser';
   /** Password is only ever returned once, upon user creation. It is the clients responsiblity to store the password */
@@ -401,13 +406,24 @@ export type PendingOpenChannel = {
 
 export type Query = {
    __typename?: 'Query';
+  /**  account info about the logged in user */
   me: UserResponse;
+  /** Total Balance of the underlying lightning node */
   nodeBalance: BalanceResponse;
+  /** Info about the nodes channels */
   channels: ChannelResponse;
+  /** decodes a given lightning invoice */
   decodeInvoice?: Maybe<DecodedInvoice>;
+  /** Returns info about the lightning node  */
   info: InfoPayload;
   /** Tests the macaroon sent in Authorization header against the array of caveats */
   checkMacaroon?: Maybe<Error>;
+  /** returns name of api (used by frontend to determine valid endpoints */
+  API: Scalars['String'];
+  /** returns api version */
+  version: Scalars['String'];
+  /** get network of node */
+  network: Network;
 };
 
 
@@ -672,6 +688,7 @@ export type MeQueryVariables = {};
 
 export type MeQuery = (
   { __typename?: 'Query' }
+  & Pick<Query, 'version' | 'network'>
   & { me: (
     { __typename: 'User' }
     & Pick<User, 'balance' | 'created' | 'btcAddress'>
@@ -689,6 +706,14 @@ export type MeQuery = (
     { __typename: 'Error' }
     & Pick<Error, 'message' | 'errorType'>
   ) }
+);
+
+export type InspectEndpointQueryVariables = {};
+
+
+export type InspectEndpointQuery = (
+  { __typename?: 'Query' }
+  & Pick<Query, 'API' | 'version' | 'network'>
 );
 
 
@@ -1104,6 +1129,8 @@ export function useFeedQuery(variables?: FeedQueryVariables | VueCompositionApi.
 export type FeedQueryCompositionFunctionResult = ReturnType<typeof useFeedQuery>;
 export const MeDocument = gql`
     query me {
+  version
+  network
   me {
     __typename
     ... on User {
@@ -1177,3 +1204,31 @@ export function useMeQuery(variables?: MeQueryVariables | VueCompositionApi.Ref<
           return VueApolloComposable.useQuery<MeQuery, MeQueryVariables>(MeDocument, variables, baseOptions);
         }
 export type MeQueryCompositionFunctionResult = ReturnType<typeof useMeQuery>;
+export const InspectEndpointDocument = gql`
+    query inspectEndpoint {
+  API
+  version
+  network
+}
+    `;
+
+/**
+ * __useInspectEndpointQuery__
+ *
+ * To run a query within a Vue component, call `useInspectEndpointQuery` and pass it any options that fit your needs.
+ * When your component renders, `useInspectEndpointQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useInspectEndpointQuery(
+ *   {
+ *   }
+ * );
+ */
+type ReactiveFunctionInspectEndpointQuery = () => InspectEndpointQueryVariables
+export function useInspectEndpointQuery(variables?: InspectEndpointQueryVariables | VueCompositionApi.Ref<InspectEndpointQueryVariables> | ReactiveFunctionInspectEndpointQuery, baseOptions?: VueApolloComposable.UseQueryOptions<InspectEndpointQuery, InspectEndpointQueryVariables>) {
+          return VueApolloComposable.useQuery<InspectEndpointQuery, InspectEndpointQueryVariables>(InspectEndpointDocument, variables, baseOptions);
+        }
+export type InspectEndpointQueryCompositionFunctionResult = ReturnType<typeof useInspectEndpointQuery>;

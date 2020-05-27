@@ -1,4 +1,6 @@
 query me {
+    version
+    network
     me {
         __typename
         ... on User {

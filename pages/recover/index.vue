@@ -3,9 +3,9 @@
     v-container
       v-row(justify='center' align='center')
         v-container(fluid)
-        v-col(cols="12" md='10' lg='8')
+        v-col(cols="11" md='10' lg='8')
           v-text-field(v-model="field" :rules="[validate]" outlined label="Recovery Key" :error-messages="errorMsg")
-        v-col(cols="12" md='10' lg='8').text-center
+        v-col(cols="11" md='10' lg='8').text-center
             v-btn(type="submit" x-large block :disabled="!isValid")
               | Recover Wallet
 
@@ -17,6 +17,7 @@ import { authStore } from '~/store'
 
 export default defineComponent({
   layout: 'plain',
+  middleware: ['loadAuth', 'assertUnAuthed'],
   setup (_, {root}) {
     const username = computed(() => field.value.split(':')[0])
     const password = computed(() => field.value.split(':')[1])

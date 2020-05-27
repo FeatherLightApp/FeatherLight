@@ -6,24 +6,34 @@
           v-card
             v-progress-linear(v-if='loading' stream buffer-value='0' color="quaternary" absolute top)
             v-container
-              v-row(justify='center')
-                v-col(cols='12').text-right.overline.py-0
-                  | Created: {{ epochToHuman(walletStore.created) }} 
+              v-row(justify='end')
+                v-col(cols='auto').text-left.overline.py-0
+                  v-dialog(max-width='500')
+                    template(v-slot:activator='{ on }')
+                      v-btn(text v-on='on') {{walletStore.network}}
+                    v-card
+                      v-card-text
+                        | FeatherLight API v{{walletStore.version}} running on {{ walletStore.network }} using endpoint&nbsp;
+                        a(:href='endpoint') {{endpoint}}
+                        br
+                        br
+                        | Wallet created {{ epochToHuman(walletStore.created) }} 
                 v-col(cols='12' style='font-family: "Eczar", sans-serif !important;').text-center.primary--text.display-3
                   | {{ value }}
                   span(v-if='walletStore.created').overline.white--text
                     |&nbsp;{{ settingsStore.currency }}
             v-tabs(v-model='tab' fixed-tabs :icons-and-text='$vuetify.breakpoint.mdAndUp')
               v-tab(v-for='item in items' :key='item.text' @click='vibrate(200)')
-                span.hidden-xs-only {{ item.text }}
+                span.hidden-xs-only {{ item.name }}
                 v-icon.mb-1.hidden-sm-only {{ item.icon }}
             div.hidden-sm-and-up
               v-divider(light)
-              div.mobile-header.text-center.my-3 {{computedComponent}}
+              div.mobile-header.text-center.my-3 {{items[tab].name}}
             v-divider(light)
-            v-expand-transition(mode='out-in')
-              keep-alive
-                component(:is='computedComponent' ref='activeElem')
+            v-tabs-items(v-model='tab')
+              v-tab-item(v-for='item in items' :key='item.text')
+                component(:is='item.name' :ref='item.name')
+            
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref, watch } from '@vue/composition-api'
@@ -32,6 +42,7 @@ import { settingsStore, walletStore } from '~/store'
 import useCurrencyRounding from '~/composition/useCurrencyRounding'
 import useDateConversion from '~/composition/useDateConversion'
 import useVibrate from '~/composition/useVibrate'
+import useEndpoint from '~/composition/useEndpoint'
 
 export default defineComponent({
   components: {
@@ -45,9 +56,9 @@ export default defineComponent({
     const { epochToHuman } = useDateConversion()
 
     const items = ref([
-      { text: 'send', icon: 'mdi-cash-minus' },
-      { text: 'transactions', icon: 'mdi-history' },
-      { text: 'receive', icon: 'mdi-cash-plus' }
+      { name: 'send', icon: 'mdi-cash-minus', },
+      { name: 'transactions', icon: 'mdi-history' },
+      { name: 'receive', icon: 'mdi-cash-plus' }
     ])
 
     const tab = computed({
@@ -61,27 +72,18 @@ export default defineComponent({
       }
     })
 
-    const computedComponent = computed(() => {
-      if (tab.value == 0) {
-        return 'send'
-      } else if (tab.value == 1) {
-        return 'transactions'
-      } else if (tab.value == 2) {
-        return 'receive'
-      }
-    })
+    const transactions = ref<HTMLElement>(null)
 
-    const activeElem = ref<HTMLElement>(null)
-
-    watch(activeElem, () => {
-      if (computedComponent.value == 'transactions' && activeElem.value) {
-        console.log('refetch')
+    watch(tab, () => {
+      if (tab.value == 1 && transactions.value) {
         // @ts-ignore
-        activeElem.value.refetch()
+        transactions.value[0].refetch()
       }
     })
 
     const { vibrate } = useVibrate()
+    const { getEndpoint } = useEndpoint()
+    const endpoint = getEndpoint()
 
     return {
       loading,
@@ -90,10 +92,10 @@ export default defineComponent({
       settingsStore,
       walletStore,
       value,
-      computedComponent,
-      activeElem,
+      transactions,
       epochToHuman,
-      vibrate
+      vibrate,
+      endpoint
     }
   }
 })
