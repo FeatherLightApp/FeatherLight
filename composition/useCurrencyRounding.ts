@@ -31,13 +31,18 @@ const useCurrencyRounding = () => {
         }
     }
 
+    function inSats (val: number) {
+        return Math.round((val * multiplier.value) + Number.EPSILON)
+    }
+
     const value = computed(() => translate(walletStore.balance))
 
     return {
         translate,
         value,
         multiplier,
-        round
+        round,
+        inSats
     }
 }
 
